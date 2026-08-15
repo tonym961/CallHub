@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- app_name is provided per flavor via resValue() in app/build.gradle.kts -->
+
+    <!-- Navigation / titles -->
+    <string name="title_recents">Recent calls</string>
+    <string name="title_dialpad">Keypad</string>
+    <string name="title_contacts">Contacts</string>
+    <string name="title_settings">Settings</string>
+
+    <!-- Onboarding -->
+    <string name="setup_default_dialer_text">Set CallHub as the default phone app to log native calls.</string>
+    <string name="setup_default_dialer_button">Set as default</string>
+    <string name="setup_notification_text">Allow notification access to detect WhatsApp and Telegram calls.</string>
+    <string name="setup_notification_button">Allow access</string>
+
+    <!-- Recents -->
+    <string name="empty_recents">No calls recorded yet</string>
+    <string name="unknown_caller">Unknown</string>
+
+    <!-- Dialpad / contacts -->
+    <string name="action_call">Call</string>
+    <string name="action_delete">Delete</string>
+    <string name="search_contact">Search contact</string>
+    <string name="no_contacts">No contacts</string>
+
+    <!-- In-call -->
+    <string name="call_incoming">Incoming call…</string>
+    <string name="call_dialing">Calling…</string>
+    <string name="call_on_hold">On hold</string>
+    <string name="action_answer">Answer</string>
+    <string name="action_reject">Reject</string>
+    <string name="action_mute">Mute</string>
+    <string name="action_speaker">Speaker</string>
+    <string name="action_hold">Hold</string>
+    <string name="action_hangup">Hang up</string>
+
+    <!-- Notifications -->
+    <string name="notif_incoming_title">Incoming call</string>
+    <string name="notif_ongoing_title">Ongoing call</string>
+    <string name="notif_channel_name">Calls</string>
+    <string name="notif_channel_desc">Ongoing and incoming calls</string>
+    <string name="notif_listener_label">CallHub — messenger call detection</string>
+
+    <!-- Settings: spam -->
+    <string name="settings_spam_title">Spam protection</string>
+    <string name="settings_block_anonymous">Block anonymous numbers</string>
+    <string name="settings_block_non_contacts">Block numbers not in contacts</string>
+    <string name="settings_number_to_block">Number to block</string>
+    <string name="action_block">Block</string>
+    <string name="action_remove">Remove</string>
+
+    <!-- Settings: SIP -->
+    <string name="settings_sip_title">SIP account</string>
+    <string name="sip_display_name">Display name</string>
+    <string name="sip_username">Username</string>
+    <string name="sip_domain">Domain / server (e.g. sip.example.com)</string>
+    <string name="sip_password">Password</string>
+    <string name="sip_port">Port</string>
+    <string name="sip_registered">Registered</string>
+    <string name="sip_not_registered">Not registered</string>
+    <string name="sip_status">Status: %1$s</string>
+    <string name="sip_save_register">Save and register</string>
+    <string name="sip_engine_note">Note: a SIP engine (Linphone/PJSIP) is required for real calls; the current one is a stub. Enable the account in Settings → Calls → Calling accounts.</string>
+
+    <!-- Call sources -->
+    <string name="source_phone">Phone</string>
+    <string name="source_whatsapp">WhatsApp</string>
+    <string name="source_whatsapp_business">WhatsApp Business</string>
+    <string name="source_telegram">Telegram</string>
+    <string name="source_telegram_x">Telegram X</string>
+    <string name="source_nekogram">Nekogram</string>
+    <string name="source_plus_messenger">Plus Messenger</string>
+    <string name="source_other">Other app</string>
+</resources>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_recents">Letzte Anrufe</string>
+    <string name="title_dialpad">Tastenfeld</string>
+    <string name="title_contacts">Kontakte</string>
+    <string name="title_settings">Einstellungen</string>
+
+    <string name="setup_default_dialer_text">Lege CallHub als Standard-Telefon-App fest, um native Anrufe zu protokollieren.</string>
+    <string name="setup_default_dialer_button">Als Standard festlegen</string>
+    <string name="setup_notification_text">Erlaube den Benachrichtigungszugriff, um WhatsApp- und Telegram-Anrufe zu erkennen.</string>
+    <string name="setup_notification_button">Zugriff erlauben</string>
+
+    <string name="empty_recents">Noch keine Anrufe aufgezeichnet</string>
+    <string name="unknown_caller">Unbekannt</string>
+
+    <string name="action_call">Anrufen</string>
+    <string name="action_delete">Löschen</string>
+    <string name="search_contact">Kontakt suchen</string>
+    <string name="no_contacts">Keine Kontakte</string>
+
+    <string name="call_incoming">Eingehender Anruf…</string>
+    <string name="call_dialing">Wird angerufen…</string>
+    <string name="call_on_hold">Gehalten</string>
+    <string name="action_answer">Annehmen</string>
+    <string name="action_reject">Ablehnen</string>
+    <string name="action_mute">Stumm</string>
+    <string name="action_speaker">Lautsprecher</string>
+    <string name="action_hold">Halten</string>
+    <string name="action_hangup">Auflegen</string>
+
+    <string name="notif_incoming_title">Eingehender Anruf</string>
+    <string name="notif_ongoing_title">Laufender Anruf</string>
+    <string name="notif_channel_name">Anrufe</string>
+    <string name="notif_channel_desc">Laufende und eingehende Anrufe</string>
+    <string name="notif_listener_label">CallHub — Anruferkennung für Messenger</string>
+
+    <string name="settings_spam_title">Spam-Schutz</string>
+    <string name="settings_block_anonymous">Anonyme Nummern blockieren</string>
+    <string name="settings_block_non_contacts">Nummern blockieren, die nicht in Kontakten sind</string>
+    <string name="settings_number_to_block">Zu blockierende Nummer</string>
+    <string name="action_block">Blockieren</string>
+    <string name="action_remove">Entfernen</string>
+
+    <string name="settings_sip_title">SIP-Konto</string>
+    <string name="sip_display_name">Anzeigename</string>
+    <string name="sip_username">Benutzername</string>
+    <string name="sip_domain">Domain / Server (z. B. sip.example.com)</string>
+    <string name="sip_password">Passwort</string>
+    <string name="sip_port">Port</string>
+    <string name="sip_registered">Registriert</string>
+    <string name="sip_not_registered">Nicht registriert</string>
+    <string name="sip_status">Status: %1$s</string>
+    <string name="sip_save_register">Speichern und registrieren</string>
+    <string name="sip_engine_note">Hinweis: Für echte Anrufe ist eine SIP-Engine (Linphone/PJSIP) erforderlich; die aktuelle ist ein Stub. Aktiviere das Konto unter Einstellungen → Anrufe → Anrufkonten.</string>
+
+    <string name="source_phone">Telefon</string>
+    <string name="source_whatsapp">WhatsApp</string>
+    <string name="source_whatsapp_business">WhatsApp Business</string>
+    <string name="source_telegram">Telegram</string>
+    <string name="source_telegram_x">Telegram X</string>
+    <string name="source_nekogram">Nekogram</string>
+    <string name="source_plus_messenger">Plus Messenger</string>
+    <string name="source_other">Andere App</string>
+</resources>

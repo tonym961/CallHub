@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#12A074"/>
+      <stop offset="1" stop-color="#0B6E4F"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="1024" height="1024" rx="224" fill="url(#bg)"/>
+
+  <!-- hub ring -->
+  <circle cx="512" cy="512" r="300" fill="none" stroke="#FFFFFF" stroke-opacity="0.38" stroke-width="16"/>
+
+  <!-- source nodes on the ring -->
+  <circle cx="512" cy="212" r="34" fill="#FFFFFF"/>
+  <circle cx="252" cy="662" r="30" fill="#FFFFFF"/>
+  <circle cx="772" cy="662" r="30" fill="#FFFFFF"/>
+
+  <!-- phone handset -->
+  <g transform="translate(332,332) scale(15)" fill="#FFFFFF">
+    <path d="M6.62,10.79 c1.44,2.83 3.76,5.14 6.59,6.59 l2.2,-2.2 c0.27,-0.27 0.67,-0.36 1.02,-0.24 1.12,0.37 2.33,0.57 3.57,0.57 0.55,0 1,0.45 1,1 V20 c0,0.55 -0.45,1 -1,1 -9.39,0 -17,-7.61 -17,-17 0,-0.55 0.45,-1 1,-1 h3.5 c0.55,0 1,0.45 1,1 0,1.25 0.2,2.45 0.57,3.57 0.11,0.35 0.03,0.74 -0.25,1.02 l-2.2,2.2 z"/>
+  </g>
+</svg>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="title_recents">Chiamate recenti</string>
+    <string name="title_dialpad">Tastierino</string>
+    <string name="title_contacts">Contatti</string>
+    <string name="title_settings">Impostazioni</string>
+
+    <string name="setup_default_dialer_text">Imposta CallHub come telefono predefinito per registrare le chiamate native.</string>
+    <string name="setup_default_dialer_button">Imposta predefinito</string>
+    <string name="setup_notification_text">Consenti l\'accesso alle notifiche per rilevare le chiamate di WhatsApp e Telegram.</string>
+    <string name="setup_notification_button">Consenti accesso</string>
+
+    <string name="empty_recents">Nessuna chiamata ancora registrata</string>
+    <string name="unknown_caller">Sconosciuto</string>
+
+    <string name="action_call">Chiama</string>
+    <string name="action_delete">Cancella</string>
+    <string name="search_contact">Cerca contatto</string>
+    <string name="no_contacts">Nessun contatto</string>
+
+    <string name="call_incoming">Chiamata in arrivo…</string>
+    <string name="call_dialing">Chiamata in corso…</string>
+    <string name="call_on_hold">In attesa</string>
+    <string name="action_answer">Rispondi</string>
+    <string name="action_reject">Rifiuta</string>
+    <string name="action_mute">Muto</string>
+    <string name="action_speaker">Vivavoce</string>
+    <string name="action_hold">Attesa</string>
+    <string name="action_hangup">Riaggancia</string>
+
+    <string name="notif_incoming_title">Chiamata in arrivo</string>
+    <string name="notif_ongoing_title">Chiamata in corso</string>
+    <string name="notif_channel_name">Chiamate</string>
+    <string name="notif_channel_desc">Chiamate in corso e in arrivo</string>
+    <string name="notif_listener_label">CallHub — rilevamento chiamate app</string>
+
+    <string name="settings_spam_title">Protezione anti-spam</string>
+    <string name="settings_block_anonymous">Blocca numeri anonimi</string>
+    <string name="settings_block_non_contacts">Blocca numeri non in rubrica</string>
+    <string name="settings_number_to_block">Numero da bloccare</string>
+    <string name="action_block">Blocca</string>
+    <string name="action_remove">Rimuovi</string>
+
+    <string name="settings_sip_title">Account SIP</string>
+    <string name="sip_display_name">Nome visualizzato</string>
+    <string name="sip_username">Username</string>
+    <string name="sip_domain">Dominio / server (es. sip.example.com)</string>
+    <string name="sip_password">Password</string>
+    <string name="sip_port">Porta</string>
+    <string name="sip_registered">Registrato</string>
+    <string name="sip_not_registered">Non registrato</string>
+    <string name="sip_status">Stato: %1$s</string>
+    <string name="sip_save_register">Salva e registra</string>
+    <string name="sip_engine_note">Nota: serve un engine SIP (Linphone/PJSIP) per chiamate reali; l\'attuale è uno stub. Abilita l\'account in Impostazioni → Chiamate → Account di chiamata.</string>
+
+    <string name="source_phone">Telefono</string>
+    <string name="source_whatsapp">WhatsApp</string>
+    <string name="source_whatsapp_business">WhatsApp Business</string>
+    <string name="source_telegram">Telegram</string>
+    <string name="source_telegram_x">Telegram X</string>
+    <string name="source_nekogram">Nekogram</string>
+    <string name="source_plus_messenger">Plus Messenger</string>
+    <string name="source_other">Altra app</string>
+</resources>
