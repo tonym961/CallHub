@@ -22,6 +22,8 @@ class CallRepository private constructor(private val dao: CallEventDao) {
 
     suspend fun latestNativeStartTime(): Long? = dao.latestNativeStartTime()
 
+    suspend fun updateNote(id: Long, note: String?) = dao.updateNote(id, note)
+
     companion object {
         @Volatile private var instance: CallRepository? = null
 

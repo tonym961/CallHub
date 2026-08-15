@@ -25,4 +25,7 @@ interface CallEventDao {
 
     @Query("SELECT MAX(startTime) FROM call_events WHERE source = 'PHONE'")
     suspend fun latestNativeStartTime(): Long?
+
+    @Query("UPDATE call_events SET note = :note WHERE id = :id")
+    suspend fun updateNote(id: Long, note: String?)
 }

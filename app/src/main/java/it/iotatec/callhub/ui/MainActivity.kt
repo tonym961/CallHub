@@ -170,7 +170,8 @@ private fun RecentsTab(
         RecentsScreen(
             events = events,
             modifier = Modifier.fillMaxWidth(),
-            onCall = { number -> CallPlacer.place(context, number) }
+            onCall = { number -> CallPlacer.place(context, number) },
+            onSaveNote = { id, note -> vm.setNote(id, note) }
         )
     }
 }

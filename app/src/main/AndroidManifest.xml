@@ -117,6 +117,18 @@
             </intent-filter>
         </service>
 
+        <!-- Home-screen quick-dial widget for favorites -->
+        <receiver
+            android:name=".widget.FavoritesWidgetProvider"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget_favorites_info" />
+        </receiver>
+
         <!-- Reads notifications from messenger apps to detect VoIP calls.
              Requires the special "Notification access" grant from the user. -->
         <service

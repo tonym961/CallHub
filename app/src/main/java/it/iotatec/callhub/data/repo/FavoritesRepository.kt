@@ -1,6 +1,7 @@
 package it.iotatec.callhub.data.repo
 
 import android.content.Context
+import it.iotatec.callhub.widget.FavoritesWidgetProvider
 
 /** Favorite (speed-dial) numbers, persisted in SharedPreferences. */
 object FavoritesRepository {
@@ -25,6 +26,7 @@ object FavoritesRepository {
         val n = normalize(number)
         val nowFavorite = if (set.contains(n)) { set.remove(n); false } else { set.add(n); true }
         prefs(context).edit().putStringSet(KEY, set).apply()
+        FavoritesWidgetProvider.updateAll(context)
         return nowFavorite
     }
 }

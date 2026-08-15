@@ -89,6 +89,9 @@
     <string name="action_export">Exportieren</string>
     <string name="action_import">Importieren</string>
     <string name="import_blocklist">Blockliste importieren (.txt)</string>
+    <string name="blocklist_url">Blocklisten-URL</string>
 
     <string name="action_record">Aufnehmen</string>
+
+    <string name="note_label">Notiz</string>
 </resources>

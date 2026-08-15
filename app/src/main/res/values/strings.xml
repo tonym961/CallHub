@@ -107,7 +107,10 @@
     <string name="action_export">Export</string>
     <string name="action_import">Import</string>
     <string name="import_blocklist">Import blocklist (.txt)</string>
+    <string name="blocklist_url">Blocklist URL</string>
 
     <!-- Call recording (SIP only) -->
     <string name="action_record">Record</string>
+
+    <string name="note_label">Note</string>
 </resources>

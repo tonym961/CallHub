@@ -26,4 +26,8 @@ class RecentsViewModel(app: Application) : AndroidViewModel(app) {
     fun refreshNativeCallLog() {
         viewModelScope.launch { CallLogSync.sync(getApplication()) }
     }
+
+    fun setNote(id: Long, note: String?) {
+        viewModelScope.launch { repo.updateNote(id, note?.ifBlank { null }) }
+    }
 }

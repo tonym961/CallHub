@@ -89,6 +89,9 @@
     <string name="action_export">Esporta</string>
     <string name="action_import">Importa</string>
     <string name="import_blocklist">Importa blocklist (.txt)</string>
+    <string name="blocklist_url">URL blocklist</string>
 
     <string name="action_record">Registra</string>
+
+    <string name="note_label">Nota</string>
 </resources>

@@ -13,13 +13,21 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CallMade
 import androidx.compose.material.icons.automirrored.filled.CallMissed
 import androidx.compose.material.icons.automirrored.filled.CallReceived
+import androidx.compose.material.icons.automirrored.filled.Notes
 import androidx.compose.material.icons.filled.Videocam
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,7 +46,8 @@ import java.util.concurrent.TimeUnit
 fun RecentsScreen(
     events: List<CallEventEntity>,
     modifier: Modifier = Modifier,
-    onCall: (String) -> Unit = {}
+    onCall: (String) -> Unit = {},
+    onSaveNote: (Long, String?) -> Unit = { _, _ -> }
 ) {
     if (events.isEmpty()) {
         Column(
@@ -67,16 +76,44 @@ fun RecentsScreen(
         out
     }
 
+    var editing by remember { mutableStateOf<CallEventEntity?>(null) }
+
     LazyColumn(modifier = modifier.fillMaxSize()) {
         items(grouped, key = { it.first.id }) { (event, count) ->
-            CallRow(event, count, onCall)
+            CallRow(event, count, onCall, onEditNote = { editing = event })
             HorizontalDivider()
         }
+    }
+
+    editing?.let { ev ->
+        NoteDialog(
+            initial = ev.note,
+            onDismiss = { editing = null },
+            onSave = { text -> onSaveNote(ev.id, text); editing = null }
+        )
     }
 }
 
 @Composable
-private fun CallRow(event: CallEventEntity, count: Int, onCall: (String) -> Unit) {
+private fun NoteDialog(initial: String?, onDismiss: () -> Unit, onSave: (String?) -> Unit) {
+    var text by remember { mutableStateOf(initial.orEmpty()) }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = { TextButton(onClick = { onSave(text) }) { Text(stringResource(android.R.string.ok)) } },
+        dismissButton = { TextButton(onClick = onDismiss) { Text(stringResource(android.R.string.cancel)) } },
+        text = {
+            OutlinedTextField(
+                value = text,
+                onValueChange = { text = it },
+                label = { Text(stringResource(R.string.note_label)) },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    )
+}
+
+@Composable
+private fun CallRow(event: CallEventEntity, count: Int, onCall: (String) -> Unit, onEditNote: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -122,6 +159,14 @@ private fun CallRow(event: CallEventEntity, count: Int, onCall: (String) -> Unit
                     )
                 }
             }
+            event.note?.let { note ->
+                Text(
+                    text = note,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontStyle = androidx.compose.ui.text.font.FontStyle.Italic
+                )
+            }
         }
         Text(
             text = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
@@ -129,6 +174,13 @@ private fun CallRow(event: CallEventEntity, count: Int, onCall: (String) -> Unit
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+        IconButton(onClick = onEditNote) {
+            Icon(
+                Icons.AutoMirrored.Filled.Notes,
+                contentDescription = stringResource(R.string.note_label),
+                tint = if (event.note != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
     }
 }
 

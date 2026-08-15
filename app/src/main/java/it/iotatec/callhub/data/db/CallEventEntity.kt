@@ -30,5 +30,7 @@ data class CallEventEntity(
     val isVideo: Boolean,
     /** Raw notification title/text kept for debugging heuristics; not shown in the UI. */
     val rawText: String?,
-    val dedupeKey: String
+    val dedupeKey: String,
+    /** Optional user note attached to this call. */
+    val note: String? = null
 )

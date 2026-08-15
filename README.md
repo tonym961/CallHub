@@ -35,8 +35,10 @@ registro** sia le chiamate **cellulari native** sia gli eventi delle chiamate
 - 📞 **SIP** (VoIP): account SIP integrato in Android Telecom (stesse schermate del
   dialer). Engine-agnostico — vedi note sotto.
 - 🌍 **Multilingua**: Italiano, Inglese, Tedesco (per-app language).
-- 🎨 **Temi**: chiaro / scuro / sistema.
-- 💾 **Backup/ripristino** impostazioni (JSON) + import blocklist (`.txt`).
+- 🎨 **Temi**: chiaro / scuro / sistema + **colore accento** personalizzabile.
+- 📝 **Note per chiamata** nel registro.
+- 📱 **Widget home** per chiamata rapida ai preferiti.
+- 💾 **Backup/ripristino** (JSON) + import blocklist da **file `.txt` o URL**.
 - 🔴 **Registrazione chiamate SIP** (le chiamate **native** non sono registrabili su Android).
 - 🔄 **Auto-update** (solo sideload) via GitHub Releases.
 
@@ -105,9 +107,8 @@ Fatti: ricerca T9, preferiti, rifiuta-con-SMS, blocco via `BlockedNumberContract
 dual-SIM, **tastierino DTMF in chiamata**, **conferenza/merge**, **raggruppamento
 cronologia**, **risposte rapide personalizzabili**.
 
-Prossimi (spunti da **LineageOS/AOSP Dialer**, Apache-2.0): import blocklist da URL
-community, colore accento personalizzabile, sincronizzazione backup su cloud,
-trascrizione/note delle chiamate.
+Prossimi (spunti da **LineageOS/AOSP Dialer**, Apache-2.0): sincronizzazione backup su
+cloud, trascrizione delle chiamate, temi Material You dinamici, ricerca nel registro.
 
 > Registrazione: possibile **solo per le chiamate SIP** (controlliamo noi il media via
 > Linphone). Le chiamate **cellulari native non sono registrabili** da un'app normale su

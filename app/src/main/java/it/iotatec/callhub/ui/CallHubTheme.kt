@@ -9,21 +9,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 
-private val Green = Color(0xFF0B6E4F)
-
-private val LightColors = lightColorScheme(primary = Green)
-private val DarkColors = darkColorScheme(primary = Color(0xFF3DDC97))
-
 @Composable
 fun CallHubTheme(content: @Composable () -> Unit) {
     val mode by AppTheme.mode.collectAsState()
+    val accent by AppTheme.accent.collectAsState()
     val dark = when (mode) {
         ThemeMode.SYSTEM -> isSystemInDarkTheme()
         ThemeMode.LIGHT -> false
         ThemeMode.DARK -> true
     }
-    MaterialTheme(
-        colorScheme = if (dark) DarkColors else LightColors,
-        content = content
-    )
+    val primary = Color(accent)
+    val colors = if (dark) darkColorScheme(primary = primary) else lightColorScheme(primary = primary)
+    MaterialTheme(colorScheme = colors, content = content)
 }
