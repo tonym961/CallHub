@@ -12,6 +12,7 @@ object AppTheme {
     private const val PREFS = "theme"
     private const val KEY_MODE = "mode"
     private const val KEY_ACCENT = "accent"
+    private const val KEY_DYNAMIC = "dynamic"
 
     const val DEFAULT_ACCENT = 0xFF0B6E4FL
 
@@ -31,11 +32,20 @@ object AppTheme {
     private val _accent = MutableStateFlow(DEFAULT_ACCENT)
     val accent: StateFlow<Long> = _accent
 
+    private val _dynamic = MutableStateFlow(false)
+    val dynamic: StateFlow<Boolean> = _dynamic
+
     fun load(context: Context) {
         val prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
         _mode.value = runCatching { ThemeMode.valueOf(prefs.getString(KEY_MODE, null) ?: "SYSTEM") }
             .getOrDefault(ThemeMode.SYSTEM)
         _accent.value = prefs.getLong(KEY_ACCENT, DEFAULT_ACCENT)
+        _dynamic.value = prefs.getBoolean(KEY_DYNAMIC, false)
+    }
+
+    fun setDynamic(context: Context, enabled: Boolean) {
+        _dynamic.value = enabled
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().putBoolean(KEY_DYNAMIC, enabled).apply()
     }
 
     fun set(context: Context, mode: ThemeMode) {

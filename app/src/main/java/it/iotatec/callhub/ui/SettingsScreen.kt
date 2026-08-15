@@ -104,6 +104,8 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                 )
             }
         }
+        val dynamic by AppTheme.dynamic.collectAsState()
+        SwitchRow(stringResource(R.string.dynamic_colors), dynamic) { AppTheme.setDynamic(context, it) }
 
         HorizontalDivider(Modifier.padding(vertical = 8.dp))
 

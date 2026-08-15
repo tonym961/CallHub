@@ -60,10 +60,20 @@ fun RecentsScreen(
         return
     }
 
+    var query by remember { mutableStateOf("") }
+    val filtered = remember(events, query) {
+        if (query.isBlank()) events
+        else events.filter {
+            it.displayName?.contains(query, ignoreCase = true) == true ||
+                it.phoneNumber?.contains(query) == true ||
+                it.note?.contains(query, ignoreCase = true) == true
+        }
+    }
+
     // Collapse consecutive calls with the same number/source into one row + count.
-    val grouped = remember(events) {
+    val grouped = remember(filtered) {
         val out = mutableListOf<Pair<CallEventEntity, Int>>()
-        events.forEach { e ->
+        filtered.forEach { e ->
             val last = out.lastOrNull()
             if (last != null && last.first.phoneNumber != null &&
                 last.first.phoneNumber == e.phoneNumber && last.first.source == e.source
@@ -78,10 +88,21 @@ fun RecentsScreen(
 
     var editing by remember { mutableStateOf<CallEventEntity?>(null) }
 
-    LazyColumn(modifier = modifier.fillMaxSize()) {
-        items(grouped, key = { it.first.id }) { (event, count) ->
-            CallRow(event, count, onCall, onEditNote = { editing = event })
-            HorizontalDivider()
+    Column(modifier = modifier.fillMaxSize()) {
+        OutlinedTextField(
+            value = query,
+            onValueChange = { query = it },
+            label = { Text(stringResource(R.string.search_calls)) },
+            singleLine = true,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+        )
+        LazyColumn(Modifier.fillMaxSize()) {
+            items(grouped, key = { it.first.id }) { (event, count) ->
+                CallRow(event, count, onCall, onEditNote = { editing = event })
+                HorizontalDivider()
+            }
         }
     }
 

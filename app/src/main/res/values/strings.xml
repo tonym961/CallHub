@@ -113,4 +113,6 @@
     <string name="action_record">Record</string>
 
     <string name="note_label">Note</string>
+    <string name="search_calls">Search calls</string>
+    <string name="dynamic_colors">Dynamic colors</string>
 </resources>

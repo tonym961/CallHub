@@ -94,4 +94,6 @@
     <string name="action_record">Aufnehmen</string>
 
     <string name="note_label">Notiz</string>
+    <string name="search_calls">Anrufe suchen</string>
+    <string name="dynamic_colors">Dynamische Farben</string>
 </resources>

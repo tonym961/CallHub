@@ -35,7 +35,8 @@ registro** sia le chiamate **cellulari native** sia gli eventi delle chiamate
 - 📞 **SIP** (VoIP): account SIP integrato in Android Telecom (stesse schermate del
   dialer). Engine-agnostico — vedi note sotto.
 - 🌍 **Multilingua**: Italiano, Inglese, Tedesco (per-app language).
-- 🎨 **Temi**: chiaro / scuro / sistema + **colore accento** personalizzabile.
+- 🔎 **Ricerca nel registro** (per nome / numero / nota).
+- 🎨 **Temi**: chiaro / scuro / sistema + **colore accento** e **Material You** (colori dinamici).
 - 📝 **Note per chiamata** nel registro.
 - 📱 **Widget home** per chiamata rapida ai preferiti.
 - 💾 **Backup/ripristino** (JSON) + import blocklist da **file `.txt` o URL**.
@@ -107,8 +108,13 @@ Fatti: ricerca T9, preferiti, rifiuta-con-SMS, blocco via `BlockedNumberContract
 dual-SIM, **tastierino DTMF in chiamata**, **conferenza/merge**, **raggruppamento
 cronologia**, **risposte rapide personalizzabili**.
 
-Prossimi (spunti da **LineageOS/AOSP Dialer**, Apache-2.0): sincronizzazione backup su
-cloud, trascrizione delle chiamate, temi Material You dinamici, ricerca nel registro.
+**Trascrizione chiamate**: architettura pronta (`TranscriptionEngine` + stub, come fu per
+il SIP). Per la trascrizione reale delle registrazioni SIP va innestato un ASR — consigliato
+**Vosk** (Apache-2.0, offline) o una STT cloud. Il `SpeechRecognizer` di Android trascrive
+solo il microfono dal vivo, non i file.
+
+Prossimi (spunti da **LineageOS/AOSP Dialer**, Apache-2.0): innesto ASR Vosk per la
+trascrizione, sincronizzazione backup su cloud, gruppi di contatti, esportazione registro.
 
 > Registrazione: possibile **solo per le chiamate SIP** (controlliamo noi il media via
 > Linphone). Le chiamate **cellulari native non sono registrabili** da un'app normale su

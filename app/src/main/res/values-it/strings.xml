@@ -94,4 +94,6 @@
     <string name="action_record">Registra</string>
 
     <string name="note_label">Nota</string>
+    <string name="search_calls">Cerca chiamate</string>
+    <string name="dynamic_colors">Colori dinamici</string>
 </resources>
