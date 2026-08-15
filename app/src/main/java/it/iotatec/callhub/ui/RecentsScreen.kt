@@ -19,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -50,16 +51,32 @@ fun RecentsScreen(
         return
     }
 
+    // Collapse consecutive calls with the same number/source into one row + count.
+    val grouped = remember(events) {
+        val out = mutableListOf<Pair<CallEventEntity, Int>>()
+        events.forEach { e ->
+            val last = out.lastOrNull()
+            if (last != null && last.first.phoneNumber != null &&
+                last.first.phoneNumber == e.phoneNumber && last.first.source == e.source
+            ) {
+                out[out.lastIndex] = last.first to (last.second + 1)
+            } else {
+                out.add(e to 1)
+            }
+        }
+        out
+    }
+
     LazyColumn(modifier = modifier.fillMaxSize()) {
-        items(events, key = { it.id }) { event ->
-            CallRow(event, onCall)
+        items(grouped, key = { it.first.id }) { (event, count) ->
+            CallRow(event, count, onCall)
             HorizontalDivider()
         }
     }
 }
 
 @Composable
-private fun CallRow(event: CallEventEntity, onCall: (String) -> Unit) {
+private fun CallRow(event: CallEventEntity, count: Int, onCall: (String) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -77,8 +94,9 @@ private fun CallRow(event: CallEventEntity, onCall: (String) -> Unit) {
             else MaterialTheme.colorScheme.primary
         )
         Column(modifier = Modifier.weight(1f)) {
+            val name = event.displayName ?: event.phoneNumber ?: stringResource(R.string.unknown_caller)
             Text(
-                text = event.displayName ?: event.phoneNumber ?: stringResource(R.string.unknown_caller),
+                text = if (count > 1) stringResource(R.string.calls_count, name, count) else name,
                 fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.bodyLarge
             )

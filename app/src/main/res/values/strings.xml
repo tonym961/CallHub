@@ -61,7 +61,7 @@
     <string name="sip_not_registered">Not registered</string>
     <string name="sip_status">Status: %1$s</string>
     <string name="sip_save_register">Save and register</string>
-    <string name="sip_engine_note">Note: a SIP engine (Linphone/PJSIP) is required for real calls; the current one is a stub. Enable the account in Settings → Calls → Calling accounts.</string>
+    <string name="sip_engine_note">SIP is powered by Linphone. Enter a real account and enable it under Settings → Calls → Calling accounts.</string>
 
     <!-- Call sources -->
     <string name="source_phone">Phone</string>
@@ -86,4 +86,13 @@
 
     <!-- Dual SIM -->
     <string name="choose_sim">Choose SIM</string>
+
+    <!-- In-call extras -->
+    <string name="action_keypad">Keypad</string>
+    <string name="action_merge">Merge</string>
+
+    <!-- Quick replies -->
+    <string name="settings_quick_replies">Quick replies</string>
+    <string name="new_reply">New reply</string>
+    <string name="calls_count">%1$s (%2$d)</string>
 </resources>

@@ -30,6 +30,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import it.iotatec.callhub.R
+import it.iotatec.callhub.data.repo.QuickRepliesRepository
 import it.iotatec.callhub.dialer.spam.SpamRepository
 import it.iotatec.callhub.dialer.spam.SystemBlocklist
 import it.iotatec.callhub.sip.SipAccount
@@ -92,6 +93,42 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                     blocked = SpamRepository.blockedNumbers(context).toList()
                 }) { Text(stringResource(R.string.action_remove)) }
             }
+        }
+
+        HorizontalDivider(Modifier.padding(vertical = 8.dp))
+
+        Text(stringResource(R.string.settings_quick_replies), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+
+        var newReply by remember { mutableStateOf("") }
+        var replies by remember { mutableStateOf(QuickRepliesRepository.get(context)) }
+        replies.forEach { r ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(r, modifier = Modifier.weight(1f))
+                OutlinedButton(onClick = {
+                    QuickRepliesRepository.remove(context, r)
+                    replies = QuickRepliesRepository.get(context)
+                }) { Text(stringResource(R.string.action_remove)) }
+            }
+        }
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedTextField(
+                value = newReply,
+                onValueChange = { newReply = it },
+                label = { Text(stringResource(R.string.new_reply)) },
+                singleLine = true,
+                modifier = Modifier.weight(1f)
+            )
+            Button(onClick = {
+                if (newReply.isNotBlank()) {
+                    QuickRepliesRepository.add(context, newReply)
+                    replies = QuickRepliesRepository.get(context)
+                    newReply = ""
+                }
+            }) { Text("+") }
         }
 
         HorizontalDivider(Modifier.padding(vertical = 8.dp))

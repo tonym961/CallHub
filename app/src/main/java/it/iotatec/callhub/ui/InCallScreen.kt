@@ -16,11 +16,14 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.CallMerge
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.CallEnd
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Dialpad
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.MicOff
-import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -46,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import android.telecom.Call
 import it.iotatec.callhub.R
+import it.iotatec.callhub.data.repo.QuickRepliesRepository
 import it.iotatec.callhub.dialer.CallManager
 import it.iotatec.callhub.util.SmsSender
 import kotlinx.coroutines.delay
@@ -93,7 +97,12 @@ fun InCallScreen(onFinished: () -> Unit) {
         if (isRinging) {
             IncomingControls(state.number)
         } else {
-            ActiveControls(isMuted = state.isMuted, isSpeakerOn = state.isSpeakerOn, isOnHold = state.isOnHold)
+            ActiveControls(
+                isMuted = state.isMuted,
+                isSpeakerOn = state.isSpeakerOn,
+                isOnHold = state.isOnHold,
+                canMerge = state.canMerge
+            )
         }
         Spacer(Modifier.height(48.dp))
     }
@@ -120,8 +129,7 @@ private fun IncomingControls(number: String?) {
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         if (showReplies) {
-            listOf(R.string.quick_reply_1, R.string.quick_reply_2, R.string.quick_reply_3).forEach { res ->
-                val text = stringResource(res)
+            QuickRepliesRepository.get(context).forEach { text ->
                 TextButton(onClick = {
                     number?.let { SmsSender.send(context, it, text) }
                     CallManager.reject()
@@ -144,30 +152,74 @@ private fun IncomingControls(number: String?) {
 }
 
 @Composable
-private fun ActiveControls(isMuted: Boolean, isSpeakerOn: Boolean, isOnHold: Boolean) {
+private fun ActiveControls(isMuted: Boolean, isSpeakerOn: Boolean, isOnHold: Boolean, canMerge: Boolean) {
+    var showKeypad by remember { mutableStateOf(false) }
+
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly
-        ) {
-            RoundButton(
-                if (isMuted) Icons.Filled.MicOff else Icons.Filled.Mic,
-                stringResource(R.string.action_mute),
-                if (isMuted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-            ) { CallManager.toggleMute() }
-            RoundButton(
-                Icons.AutoMirrored.Filled.VolumeUp,
-                stringResource(R.string.action_speaker),
-                if (isSpeakerOn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-            ) { CallManager.toggleSpeaker() }
-            RoundButton(
-                Icons.Filled.Pause,
-                stringResource(R.string.action_hold),
-                if (isOnHold) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-            ) { CallManager.toggleHold() }
+        if (showKeypad) {
+            DtmfPad(onKey = { CallManager.playDtmf(it) }, onClose = { showKeypad = false })
+        } else {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                RoundButton(
+                    if (isMuted) Icons.Filled.MicOff else Icons.Filled.Mic,
+                    stringResource(R.string.action_mute),
+                    if (isMuted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                ) { CallManager.toggleMute() }
+                RoundButton(
+                    Icons.Filled.Dialpad,
+                    stringResource(R.string.action_keypad),
+                    MaterialTheme.colorScheme.surfaceVariant
+                ) { showKeypad = true }
+                RoundButton(
+                    Icons.AutoMirrored.Filled.VolumeUp,
+                    stringResource(R.string.action_speaker),
+                    if (isSpeakerOn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                ) { CallManager.toggleSpeaker() }
+                RoundButton(
+                    Icons.Filled.Pause,
+                    stringResource(R.string.action_hold),
+                    if (isOnHold) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                ) { CallManager.toggleHold() }
+            }
+            if (canMerge) {
+                Spacer(Modifier.height(16.dp))
+                RoundButton(
+                    Icons.AutoMirrored.Filled.CallMerge,
+                    stringResource(R.string.action_merge),
+                    MaterialTheme.colorScheme.primary
+                ) { CallManager.merge() }
+            }
+            Spacer(Modifier.height(40.dp))
+            RoundButton(Icons.Filled.CallEnd, stringResource(R.string.action_hangup), Color(0xFFD32F2F)) { CallManager.hangup() }
         }
-        Spacer(Modifier.height(40.dp))
-        RoundButton(Icons.Filled.CallEnd, stringResource(R.string.action_hangup), Color(0xFFD32F2F)) { CallManager.hangup() }
+    }
+}
+
+@Composable
+private fun DtmfPad(onKey: (Char) -> Unit, onClose: () -> Unit) {
+    val rows = listOf("123", "456", "789", "*0#")
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        rows.forEach { row ->
+            Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
+                row.forEach { c ->
+                    Surface(
+                        onClick = { onKey(c) },
+                        shape = CircleShape,
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        modifier = Modifier.padding(6.dp).size(64.dp)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(c.toString(), fontSize = 24.sp, color = MaterialTheme.colorScheme.onSurface)
+                        }
+                    }
+                }
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        RoundButton(Icons.Filled.Close, "", MaterialTheme.colorScheme.surfaceVariant, onClick = onClose)
     }
 }
 

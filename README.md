@@ -99,10 +99,12 @@ per chiamate reali va innestato uno stack — **Linphone SDK** (GPLv3/commercial
 ## Roadmap (spunti da dialer open-source)
 
 Fatti: ricerca T9, preferiti, rifiuta-con-SMS, blocco via `BlockedNumberContract`,
-dual-SIM. Prossimi (spunti da **LineageOS/AOSP Dialer**, Apache-2.0):
+dual-SIM, **tastierino DTMF in chiamata**, **conferenza/merge**, **raggruppamento
+cronologia**, **risposte rapide personalizzabili**.
 
-- Tastierino DTMF durante la chiamata · Chiamate in conferenza / merge
-- Raggruppamento cronologia · Risposte rapide personalizzabili
+Prossimi (spunti da **LineageOS/AOSP Dialer**, Apache-2.0): registrazione chiamate
+(dove legale), temi/personalizzazione, backup/ripristino, importazione blocklist
+community.
 
 ## Note legali
 

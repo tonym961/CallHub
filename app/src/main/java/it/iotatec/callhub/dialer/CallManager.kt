@@ -21,7 +21,9 @@ data class CallUiState(
     val isSpeakerOn: Boolean = false,
     val isOnHold: Boolean = false,
     /** Wall-clock time the call connected, or 0 if not yet connected. */
-    val connectTimeMillis: Long = 0L
+    val connectTimeMillis: Long = 0L,
+    /** True when there are ≥2 calls that can be merged into a conference. */
+    val canMerge: Boolean = false
 )
 
 /**
@@ -93,6 +95,11 @@ object CallManager {
         primary?.stopDtmfTone()
     }
 
+    /** Merge the two active calls into a conference. */
+    fun merge() {
+        if (calls.size >= 2) calls[0].conference(calls[1])
+    }
+
     private fun refresh() {
         val c = primary
         if (c == null) {
@@ -108,7 +115,8 @@ object CallManager {
             number = details.handle?.schemeSpecificPart,
             name = details.callerDisplayName,
             isOnHold = callState == Call.STATE_HOLDING,
-            connectTimeMillis = details.connectTimeMillis
+            connectTimeMillis = details.connectTimeMillis,
+            canMerge = calls.size >= 2
         )
     }
 }
