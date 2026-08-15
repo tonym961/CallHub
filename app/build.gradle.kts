@@ -23,6 +23,11 @@ android {
         versionName = "1.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // Ship only real-device ABIs (Linphone native libs are large).
+        ndk {
+            abiFilters += listOf("arm64-v8a", "armeabi-v7a")
+        }
     }
 
     // Two distribution builds from one codebase.
@@ -92,4 +97,7 @@ dependencies {
 
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.kotlinx.coroutines.android)
+
+    // Real SIP stack (GPLv3). The app is licensed GPLv3 accordingly.
+    implementation(libs.linphone.sdk)
 }

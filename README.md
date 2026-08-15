@@ -107,6 +107,11 @@ sorgenti permissive come **LineageOS/AOSP Dialer**, Apache-2.0):
 - **Play Store**: dialer role + accesso notifiche richiedono core-functionality,
   disclosure e privacy policy; il flavor `full` (sideload) evita questi vincoli.
 
+## Licenza
+
+**GPLv3** (vedi [`LICENSE`](LICENSE)). Il progetto integra il **Linphone SDK**
+(liblinphone, GPLv3): di conseguenza l'intera app — entrambi i flavor — è GPLv3.
+
 ## Sviluppo
 
 Richiede JDK 17 e Android SDK (compileSdk 35). Apri in Android Studio, oppure imposta

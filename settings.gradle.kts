@@ -17,6 +17,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // Linphone SDK (liblinphone) for real SIP calls.
+        maven { url = uri("https://download.linphone.org/maven_repository") }
     }
 }
 

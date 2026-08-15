@@ -11,6 +11,14 @@
     <!-- Required to be offered as the default phone/dialer app -->
     <uses-permission android:name="android.permission.MANAGE_OWN_CALLS" />
 
+    <!-- SIP (VoIP) calls via liblinphone -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+
+    <!-- Reject an incoming call with an SMS -->
+    <uses-permission android:name="android.permission.SEND_SMS" />
+
     <!-- Runtime notifications (Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 

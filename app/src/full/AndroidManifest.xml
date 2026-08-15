@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- Sideload-only: fetch and install updates from GitHub Releases.
-         These are intentionally absent from the Play flavor. -->
-    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Sideload-only: install updates fetched from GitHub Releases.
+         (INTERNET is declared in the main manifest — needed by SIP too.) -->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 
     <application>
