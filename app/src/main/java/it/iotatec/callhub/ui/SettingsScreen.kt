@@ -1,5 +1,7 @@
 package it.iotatec.callhub.ui
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +11,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -30,6 +33,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import it.iotatec.callhub.R
+import it.iotatec.callhub.data.repo.BackupManager
 import it.iotatec.callhub.data.repo.QuickRepliesRepository
 import it.iotatec.callhub.dialer.spam.SpamRepository
 import it.iotatec.callhub.dialer.spam.SystemBlocklist
@@ -48,6 +52,30 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        Text(stringResource(R.string.settings_theme), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+        val themeMode by AppTheme.mode.collectAsState()
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            ThemeMode.entries.forEach { m ->
+                FilterChip(
+                    selected = themeMode == m,
+                    onClick = { AppTheme.set(context, m) },
+                    label = {
+                        Text(
+                            stringResource(
+                                when (m) {
+                                    ThemeMode.SYSTEM -> R.string.theme_system
+                                    ThemeMode.LIGHT -> R.string.theme_light
+                                    ThemeMode.DARK -> R.string.theme_dark
+                                }
+                            )
+                        )
+                    }
+                )
+            }
+        }
+
+        HorizontalDivider(Modifier.padding(vertical = 8.dp))
+
         Text(stringResource(R.string.settings_spam_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
 
         var blockAnon by remember { mutableStateOf(SpamRepository.blockAnonymous(context)) }
@@ -183,6 +211,44 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+
+        HorizontalDivider(Modifier.padding(vertical = 8.dp))
+
+        Text(stringResource(R.string.settings_backup), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+
+        val exportLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.CreateDocument("application/json")
+        ) { uri ->
+            uri?.let {
+                context.contentResolver.openOutputStream(it)?.use { os ->
+                    os.write(BackupManager.exportJson(context).toByteArray())
+                }
+            }
+        }
+        val importLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.OpenDocument()
+        ) { uri ->
+            uri?.let {
+                val json = context.contentResolver.openInputStream(it)?.use { ins -> ins.readBytes().decodeToString() }
+                if (!json.isNullOrBlank()) runCatching { BackupManager.importJson(context, json) }
+            }
+        }
+        val blocklistLauncher = rememberLauncherForActivityResult(
+            ActivityResultContracts.OpenDocument()
+        ) { uri ->
+            uri?.let {
+                val txt = context.contentResolver.openInputStream(it)?.use { ins -> ins.readBytes().decodeToString() }
+                if (!txt.isNullOrBlank()) BackupManager.importBlocklist(context, txt)
+            }
+        }
+
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(onClick = { exportLauncher.launch("callhub-backup.json") }) { Text(stringResource(R.string.action_export)) }
+            Button(onClick = { importLauncher.launch(arrayOf("application/json")) }) { Text(stringResource(R.string.action_import)) }
+        }
+        OutlinedButton(onClick = { blocklistLauncher.launch(arrayOf("text/plain")) }) {
+            Text(stringResource(R.string.import_blocklist))
+        }
     }
 }
 

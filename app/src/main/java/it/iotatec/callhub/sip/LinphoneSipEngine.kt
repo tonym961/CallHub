@@ -131,6 +131,25 @@ class LinphoneSipEngine(context: Context) : SipEngine {
         core.isMicEnabled = !muted
     }
 
+    override val hasActiveCall: Boolean
+        get() = currentCall != null
+
+    override val isRecording: Boolean
+        get() = currentCall?.isRecording ?: false
+
+    override fun startRecording(filePath: String) {
+        currentCall?.let { call ->
+            val params = call.params
+            params.recordFile = filePath
+            call.params = params
+            call.startRecording()
+        }
+    }
+
+    override fun stopRecording() {
+        currentCall?.stopRecording()
+    }
+
     companion object {
         private const val TAG = "LinphoneSipEngine"
     }

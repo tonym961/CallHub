@@ -46,4 +46,9 @@ object StubSipEngine : SipEngine {
     override fun setMuted(muted: Boolean) {
         Log.i(TAG, "setMuted($muted) — STUB")
     }
+
+    override val hasActiveCall: Boolean get() = callbacks != null
+    override val isRecording: Boolean get() = false
+    override fun startRecording(filePath: String) { Log.i(TAG, "startRecording($filePath) — STUB") }
+    override fun stopRecording() { Log.i(TAG, "stopRecording() — STUB") }
 }

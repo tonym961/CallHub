@@ -79,4 +79,16 @@
     <string name="settings_quick_replies">Schnellantworten</string>
     <string name="new_reply">Neue Antwort</string>
     <string name="calls_count">%1$s (%2$d)</string>
+
+    <string name="settings_theme">Design</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Hell</string>
+    <string name="theme_dark">Dunkel</string>
+
+    <string name="settings_backup">Sicherung &amp; Wiederherstellung</string>
+    <string name="action_export">Exportieren</string>
+    <string name="action_import">Importieren</string>
+    <string name="import_blocklist">Blockliste importieren (.txt)</string>
+
+    <string name="action_record">Aufnehmen</string>
 </resources>

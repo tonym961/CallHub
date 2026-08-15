@@ -95,4 +95,19 @@
     <string name="settings_quick_replies">Quick replies</string>
     <string name="new_reply">New reply</string>
     <string name="calls_count">%1$s (%2$d)</string>
+
+    <!-- Theme -->
+    <string name="settings_theme">Theme</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+
+    <!-- Backup / import -->
+    <string name="settings_backup">Backup &amp; restore</string>
+    <string name="action_export">Export</string>
+    <string name="action_import">Import</string>
+    <string name="import_blocklist">Import blocklist (.txt)</string>
+
+    <!-- Call recording (SIP only) -->
+    <string name="action_record">Record</string>
 </resources>

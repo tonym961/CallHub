@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.CallEnd
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Dialpad
+import androidx.compose.material.icons.filled.FiberManualRecord
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.MicOff
 import androidx.compose.material.icons.filled.Pause
@@ -51,6 +52,7 @@ import android.telecom.Call
 import it.iotatec.callhub.R
 import it.iotatec.callhub.data.repo.QuickRepliesRepository
 import it.iotatec.callhub.dialer.CallManager
+import it.iotatec.callhub.util.CallRecorder
 import it.iotatec.callhub.util.SmsSender
 import kotlinx.coroutines.delay
 
@@ -153,7 +155,9 @@ private fun IncomingControls(number: String?) {
 
 @Composable
 private fun ActiveControls(isMuted: Boolean, isSpeakerOn: Boolean, isOnHold: Boolean, canMerge: Boolean) {
+    val context = LocalContext.current
     var showKeypad by remember { mutableStateOf(false) }
+    var recording by remember { mutableStateOf(CallRecorder.isRecording()) }
 
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         if (showKeypad) {
@@ -184,14 +188,23 @@ private fun ActiveControls(isMuted: Boolean, isSpeakerOn: Boolean, isOnHold: Boo
                     if (isOnHold) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
                 ) { CallManager.toggleHold() }
             }
-            if (canMerge) {
-                Spacer(Modifier.height(16.dp))
-                RoundButton(
-                    Icons.AutoMirrored.Filled.CallMerge,
-                    stringResource(R.string.action_merge),
-                    MaterialTheme.colorScheme.primary
-                ) { CallManager.merge() }
+            Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                if (canMerge) {
+                    RoundButton(
+                        Icons.AutoMirrored.Filled.CallMerge,
+                        stringResource(R.string.action_merge),
+                        MaterialTheme.colorScheme.primary
+                    ) { CallManager.merge() }
+                }
+                if (CallRecorder.canRecord()) {
+                    RoundButton(
+                        Icons.Filled.FiberManualRecord,
+                        stringResource(R.string.action_record),
+                        if (recording) Color(0xFFD32F2F) else MaterialTheme.colorScheme.surfaceVariant
+                    ) { recording = CallRecorder.toggle(context) }
+                }
             }
+            if (canMerge || CallRecorder.canRecord()) Spacer(Modifier.height(16.dp))
             Spacer(Modifier.height(40.dp))
             RoundButton(Icons.Filled.CallEnd, stringResource(R.string.action_hangup), Color(0xFFD32F2F)) { CallManager.hangup() }
         }

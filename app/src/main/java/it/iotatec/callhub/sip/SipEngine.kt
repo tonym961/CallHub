@@ -25,6 +25,16 @@ interface SipEngine {
 
     fun setMuted(muted: Boolean)
 
+    /** True while a SIP call is active (used to gate the record button; native calls never set this). */
+    val hasActiveCall: Boolean
+
+    val isRecording: Boolean
+
+    /** Record the current SIP call to [filePath] (native-call recording is impossible on Android). */
+    fun startRecording(filePath: String)
+
+    fun stopRecording()
+
     interface RegistrationListener {
         fun onRegistrationStateChanged(registered: Boolean, message: String?)
         /** Engine received an inbound INVITE. */
