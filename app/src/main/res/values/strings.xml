@@ -72,4 +72,18 @@
     <string name="source_nekogram">Nekogram</string>
     <string name="source_plus_messenger">Plus Messenger</string>
     <string name="source_other">Other app</string>
+
+    <!-- Reject with message -->
+    <string name="reject_with_message">Message</string>
+    <string name="quick_reply_1">I\'ll call you back</string>
+    <string name="quick_reply_2">Can\'t talk right now</string>
+    <string name="quick_reply_3">On my way</string>
+
+    <!-- Favorites -->
+    <string name="favorites_title">Favorites</string>
+    <string name="add_favorite">Add to favorites</string>
+    <string name="remove_favorite">Remove from favorites</string>
+
+    <!-- Dual SIM -->
+    <string name="choose_sim">Choose SIM</string>
 </resources>

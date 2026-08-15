@@ -25,9 +25,13 @@ registro** sia le chiamate **cellulari native** sia gli eventi delle chiamate
   chiamata a schermo intero.
 - 🧭 **Registro unificato**: timeline unica di chiamate native (dati completi) +
   VoIP (rilevate dalle notifiche), con app di origine, dedup e tap-to-call.
-- 👤 **Rubrica** con **foto del contatto** e ricerca.
-- 🛡️ **Anti-spam** a costo zero: `CallScreeningService` con blocklist locale,
-  regole (anonimi, non-in-rubrica) e provider di reputazione *pluggable*.
+- 👤 **Rubrica** con **foto del contatto**, ricerca e **preferiti** (speed dial).
+- ⌨️ **Ricerca T9** sul tastierino (digiti → trova contatti per nome/numero).
+- 💬 **Rifiuta con messaggio** (SMS di risposta rapida) sulle chiamate in arrivo.
+- 📶 **Dual-SIM**: scelta della SIM per la chiamata.
+- 🛡️ **Anti-spam** a costo zero: `CallScreeningService` con blocklist locale +
+  **blocco di sistema** (`BlockedNumberContract`), regole (anonimi, non-in-rubrica)
+  e provider di reputazione *pluggable*.
 - 📞 **SIP** (VoIP): account SIP integrato in Android Telecom (stesse schermate del
   dialer). Engine-agnostico — vedi note sotto.
 - 🌍 **Multilingua**: Italiano, Inglese, Tedesco (per-app language).
@@ -94,11 +98,11 @@ per chiamate reali va innestato uno stack — **Linphone SDK** (GPLv3/commercial
 
 ## Roadmap (spunti da dialer open-source)
 
-Idee da reimplementare (⚠️ **non** copiare codice GPL nel flavor commerciale; usare
-sorgenti permissive come **LineageOS/AOSP Dialer**, Apache-2.0):
+Fatti: ricerca T9, preferiti, rifiuta-con-SMS, blocco via `BlockedNumberContract`,
+dual-SIM. Prossimi (spunti da **LineageOS/AOSP Dialer**, Apache-2.0):
 
-- Ricerca T9 sul tastierino · Preferiti / chiamata rapida · Rifiuta-con-SMS
-- Blocco numeri via `BlockedNumberContract` · Dual-SIM · Tastierino DTMF in chiamata
+- Tastierino DTMF durante la chiamata · Chiamate in conferenza / merge
+- Raggruppamento cronologia · Risposte rapide personalizzabili
 
 ## Note legali
 

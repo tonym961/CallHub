@@ -61,4 +61,15 @@
     <string name="source_nekogram">Nekogram</string>
     <string name="source_plus_messenger">Plus Messenger</string>
     <string name="source_other">Andere App</string>
+
+    <string name="reject_with_message">Nachricht</string>
+    <string name="quick_reply_1">Ich rufe zurück</string>
+    <string name="quick_reply_2">Kann gerade nicht sprechen</string>
+    <string name="quick_reply_3">Bin unterwegs</string>
+
+    <string name="favorites_title">Favoriten</string>
+    <string name="add_favorite">Zu Favoriten hinzufügen</string>
+    <string name="remove_favorite">Aus Favoriten entfernen</string>
+
+    <string name="choose_sim">SIM wählen</string>
 </resources>

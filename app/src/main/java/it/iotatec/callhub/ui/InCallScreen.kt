@@ -26,17 +26,20 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -44,6 +47,7 @@ import androidx.compose.ui.unit.sp
 import android.telecom.Call
 import it.iotatec.callhub.R
 import it.iotatec.callhub.dialer.CallManager
+import it.iotatec.callhub.util.SmsSender
 import kotlinx.coroutines.delay
 
 @Composable
@@ -87,7 +91,7 @@ fun InCallScreen(onFinished: () -> Unit) {
         Spacer(Modifier.weight(1f))
 
         if (isRinging) {
-            IncomingControls()
+            IncomingControls(state.number)
         } else {
             ActiveControls(isMuted = state.isMuted, isSpeakerOn = state.isSpeakerOn, isOnHold = state.isOnHold)
         }
@@ -110,13 +114,32 @@ private fun CallTimerText(connectTimeMillis: Long): String {
 }
 
 @Composable
-private fun IncomingControls() {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        RoundButton(Icons.Filled.CallEnd, stringResource(R.string.action_reject), Color(0xFFD32F2F)) { CallManager.reject() }
-        RoundButton(Icons.Filled.Call, stringResource(R.string.action_answer), Color(0xFF2E7D32)) { CallManager.answer() }
+private fun IncomingControls(number: String?) {
+    val context = LocalContext.current
+    var showReplies by remember { mutableStateOf(false) }
+
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        if (showReplies) {
+            listOf(R.string.quick_reply_1, R.string.quick_reply_2, R.string.quick_reply_3).forEach { res ->
+                val text = stringResource(res)
+                TextButton(onClick = {
+                    number?.let { SmsSender.send(context, it, text) }
+                    CallManager.reject()
+                }) { Text(text) }
+            }
+        } else if (number != null && SmsSender.canSend(context)) {
+            TextButton(onClick = { showReplies = true }) {
+                Text(stringResource(R.string.reject_with_message))
+            }
+        }
+        Spacer(Modifier.height(12.dp))
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            RoundButton(Icons.Filled.CallEnd, stringResource(R.string.action_reject), Color(0xFFD32F2F)) { CallManager.reject() }
+            RoundButton(Icons.Filled.Call, stringResource(R.string.action_answer), Color(0xFF2E7D32)) { CallManager.answer() }
+        }
     }
 }
 

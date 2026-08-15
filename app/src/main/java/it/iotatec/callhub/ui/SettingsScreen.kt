@@ -31,6 +31,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import it.iotatec.callhub.R
 import it.iotatec.callhub.dialer.spam.SpamRepository
+import it.iotatec.callhub.dialer.spam.SystemBlocklist
 import it.iotatec.callhub.sip.SipAccount
 import it.iotatec.callhub.sip.SipAccountStore
 import it.iotatec.callhub.sip.SipManager
@@ -72,6 +73,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
             Button(onClick = {
                 if (newBlocked.isNotBlank()) {
                     SpamRepository.addBlocked(context, newBlocked)
+                    SystemBlocklist.block(context, newBlocked)
                     blocked = SpamRepository.blockedNumbers(context).toList()
                     newBlocked = ""
                 }
@@ -86,6 +88,7 @@ fun SettingsScreen(modifier: Modifier = Modifier) {
                 Text(n)
                 OutlinedButton(onClick = {
                     SpamRepository.removeBlocked(context, n)
+                    SystemBlocklist.unblock(context, n)
                     blocked = SpamRepository.blockedNumbers(context).toList()
                 }) { Text(stringResource(R.string.action_remove)) }
             }

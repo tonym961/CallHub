@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import it.iotatec.callhub.dialer.spam.Reputation
 import it.iotatec.callhub.dialer.spam.ReputationProvider
 import it.iotatec.callhub.dialer.spam.SpamRepository
+import it.iotatec.callhub.dialer.spam.SystemBlocklist
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeoutOrNull
 
@@ -38,6 +39,7 @@ class CallScreeningServiceImpl : CallScreeningService() {
         if (isAnonymous) return SpamRepository.blockAnonymous(this)
 
         if (SpamRepository.isBlocked(this, number)) return true
+        if (SystemBlocklist.isBlocked(this, number)) return true
 
         if (SpamRepository.blockNonContacts(this) && !isInContacts(number)) return true
 
