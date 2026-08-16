@@ -229,12 +229,26 @@ private fun RepliesSettings(modifier: Modifier) {
 private fun SipSettings(modifier: Modifier) {
     val context = LocalContext.current
     DetailColumn(modifier) {
-        val existing = remember { SipAccountStore.load(context) }
-        var displayName by remember { mutableStateOf(existing?.displayName ?: "") }
-        var username by remember { mutableStateOf(existing?.username ?: "") }
-        var domain by remember { mutableStateOf(existing?.domain ?: "") }
-        var password by remember { mutableStateOf(existing?.password ?: "") }
-        var port by remember { mutableStateOf((existing?.port ?: 5060).toString()) }
+        var accounts by remember { mutableStateOf(SipAccountStore.loadAll(context)) }
+        accounts.forEach { acc ->
+            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                Column(Modifier.weight(1f)) {
+                    Text(acc.displayName.ifBlank { acc.username }, fontWeight = FontWeight.Medium)
+                    Text(acc.id, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
+                OutlinedButton(onClick = {
+                    SipManager.removeAccount(context, acc)
+                    accounts = SipAccountStore.loadAll(context)
+                }) { Text(stringResource(R.string.action_remove)) }
+            }
+        }
+        if (accounts.isNotEmpty()) HorizontalDivider(Modifier.padding(vertical = 4.dp))
+
+        var displayName by remember { mutableStateOf("") }
+        var username by remember { mutableStateOf("") }
+        var domain by remember { mutableStateOf("") }
+        var password by remember { mutableStateOf("") }
+        var port by remember { mutableStateOf("5060") }
 
         OutlinedTextField(displayName, { displayName = it }, label = { Text(stringResource(R.string.sip_display_name)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
         OutlinedTextField(username, { username = it }, label = { Text(stringResource(R.string.sip_username)) }, singleLine = true, modifier = Modifier.fillMaxWidth())
@@ -249,7 +263,9 @@ private fun SipSettings(modifier: Modifier) {
             style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Button(onClick = {
             val account = SipAccount(displayName.ifBlank { username }, username, domain, password, port.toIntOrNull() ?: 5060)
-            SipAccountStore.save(context, account); SipManager.registerPhoneAccount(context, account)
+            SipManager.registerAccount(context, account)
+            accounts = SipAccountStore.loadAll(context)
+            displayName = ""; username = ""; domain = ""; password = ""; port = "5060"
         }, enabled = username.isNotBlank() && domain.isNotBlank(), modifier = Modifier.fillMaxWidth()) {
             Text(stringResource(R.string.sip_save_register))
         }

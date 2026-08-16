@@ -20,9 +20,10 @@ class SipConnectionService : ConnectionService() {
         val connection = SipConnection()
         val address = request?.address
         val number = address?.schemeSpecificPart.orEmpty()
+        val accountId = request?.accountHandle?.id ?: connectionManagerPhoneAccount?.id
         connection.setAddress(address, TelecomManager.PRESENTATION_ALLOWED)
         connection.setInitialized()
-        SipRegistry.engine.startCall(number, connection.engineCallbacks)
+        SipRegistry.engine.startCall(number, accountId, connection.engineCallbacks)
         return connection
     }
 

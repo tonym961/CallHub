@@ -18,7 +18,7 @@ object CallingAccounts {
         SimSelector.accounts(context).forEach { sim ->
             if (seen.add(sim.handle.id)) out.add(CallingOption(sim.label, sim.handle))
         }
-        SipAccountStore.load(context)?.let { acc ->
+        SipAccountStore.loadAll(context).forEach { acc ->
             val handle = SipManager.phoneAccountHandle(context, acc)
             if (seen.add(handle.id)) out.add(CallingOption(acc.displayName.ifBlank { acc.username }, handle))
         }

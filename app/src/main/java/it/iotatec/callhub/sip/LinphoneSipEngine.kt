@@ -23,6 +23,7 @@ class LinphoneSipEngine(context: Context) : SipEngine {
     private var regListener: SipEngine.RegistrationListener? = null
     private var callCallbacks: SipEngine.CallCallbacks? = null
     private var currentCall: Call? = null
+    private val accountMap = mutableMapOf<String, Account>()
 
     @Volatile
     override var isRegistered: Boolean = false
@@ -71,44 +72,49 @@ class LinphoneSipEngine(context: Context) : SipEngine {
         core.start()
     }
 
-    override fun register(account: SipAccount, listener: SipEngine.RegistrationListener) {
+    override fun register(accounts: List<SipAccount>, listener: SipEngine.RegistrationListener) {
         regListener = listener
         val factory = Factory.instance()
 
-        val authInfo = factory.createAuthInfo(
-            account.username, null, account.password, null, null, account.domain
-        )
-        core.addAuthInfo(authInfo)
+        accounts.forEach { account ->
+            if (accountMap.containsKey(account.id)) return@forEach
+            val authInfo = factory.createAuthInfo(
+                account.username, null, account.password, null, null, account.domain
+            )
+            core.addAuthInfo(authInfo)
 
-        val params = core.createAccountParams()
-        params.identityAddress = factory.createAddress("sip:${account.username}@${account.domain}")
+            val params = core.createAccountParams()
+            params.identityAddress = factory.createAddress("sip:${account.username}@${account.domain}")
+            val transport = when (account.transport) {
+                SipAccount.Transport.TCP -> ";transport=tcp"
+                SipAccount.Transport.TLS -> ";transport=tls"
+                SipAccount.Transport.UDP -> ""
+            }
+            params.serverAddress = factory.createAddress("sip:${account.domain}:${account.port}$transport")
+            params.isRegisterEnabled = true
 
-        val transport = when (account.transport) {
-            SipAccount.Transport.TCP -> ";transport=tcp"
-            SipAccount.Transport.TLS -> ";transport=tls"
-            SipAccount.Transport.UDP -> ""
+            val acc = core.createAccount(params)
+            core.addAccount(acc)
+            accountMap[account.id] = acc
         }
-        params.serverAddress = factory.createAddress("sip:${account.domain}:${account.port}$transport")
-        params.isRegisterEnabled =true
-
-        val acc = core.createAccount(params)
-        core.addAccount(acc)
-        core.defaultAccount = acc
-        Log.i(TAG, "Registering ${account.id}")
+        if (core.defaultAccount == null) accountMap.values.firstOrNull()?.let { core.defaultAccount = it }
+        Log.i(TAG, "Registering ${accounts.size} account(s)")
     }
 
     override fun unregister() {
-        core.defaultAccount?.let { acc ->
+        accountMap.values.forEach { acc ->
             val params = acc.params.clone()
-            params.isRegisterEnabled =false
+            params.isRegisterEnabled = false
             acc.params = params
         }
         isRegistered = false
     }
 
-    override fun startCall(number: String, callbacks: SipEngine.CallCallbacks) {
+    override fun startCall(number: String, accountId: String?, callbacks: SipEngine.CallCallbacks) {
         callCallbacks = callbacks
-        val domain = core.defaultAccount?.params?.identityAddress?.domain
+        val account = accountId?.let { accountMap[it] } ?: core.defaultAccount
+        account?.let { core.defaultAccount = it }
+        val domain = account?.params?.identityAddress?.domain
         val uri = if (number.contains("@")) "sip:$number" else "sip:$number@$domain"
         val address = core.interpretUrl(uri)
         if (address == null) {

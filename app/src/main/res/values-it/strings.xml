@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="title_recents">Chiamate recenti</string>
+    <string name="title_recents">Recenti</string>
     <string name="title_dialpad">Tastierino</string>
     <string name="title_contacts">Contatti</string>
     <string name="title_settings">Impostazioni</string>

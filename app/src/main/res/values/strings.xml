@@ -3,7 +3,7 @@
     <!-- app_name is provided per flavor via resValue() in app/build.gradle.kts -->
 
     <!-- Navigation / titles -->
-    <string name="title_recents">Recent calls</string>
+    <string name="title_recents">Recents</string>
     <string name="title_dialpad">Keypad</string>
     <string name="title_contacts">Contacts</string>
     <string name="title_settings">Settings</string>

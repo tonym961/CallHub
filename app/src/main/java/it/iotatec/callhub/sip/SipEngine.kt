@@ -11,11 +11,15 @@ interface SipEngine {
 
     val isRegistered: Boolean
 
-    fun register(account: SipAccount, listener: RegistrationListener)
+    /** Register all [accounts] (multi-account supported). */
+    fun register(accounts: List<SipAccount>, listener: RegistrationListener)
     fun unregister()
 
-    /** Begin an outgoing call; drive [callbacks] as signaling progresses. */
-    fun startCall(number: String, callbacks: CallCallbacks)
+    /**
+     * Begin an outgoing call using the account [accountId] (SipAccount.id), or the
+     * default account when null. Drive [callbacks] as signaling progresses.
+     */
+    fun startCall(number: String, accountId: String?, callbacks: CallCallbacks)
 
     /** Answer the current incoming call. */
     fun answer()

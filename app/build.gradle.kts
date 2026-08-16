@@ -20,7 +20,7 @@ android {
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "it.iotatec.callhub"
+        applicationId = "app.callhub.it"
         minSdk = 26
         targetSdk = 35
 
@@ -29,8 +29,8 @@ android {
         //   MINOR — nuove funzionalità retrocompatibili
         //   PATCH — solo correzioni di bug
         // versionCode = MAJOR*10000 + MINOR*100 + PATCH (monotòno crescente per lo store).
-        versionCode = 10200
-        versionName = "1.2.0"
+        versionCode = 10300
+        versionName = "1.3.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -47,7 +47,6 @@ android {
     productFlavors {
         create("full") {
             dimension = "distribution"
-            applicationIdSuffix = ".full"
             versionNameSuffix = "-full"
             resValue("string", "app_name", "CallHub")
             // GitHub repo used by the sideload auto-updater (full flavor only).

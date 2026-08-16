@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="title_recents">Letzte Anrufe</string>
+    <string name="title_recents">Anrufe</string>
     <string name="title_dialpad">Tastenfeld</string>
     <string name="title_contacts">Kontakte</string>
     <string name="title_settings">Einstellungen</string>

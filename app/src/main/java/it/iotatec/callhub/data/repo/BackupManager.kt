@@ -26,14 +26,19 @@ object BackupManager {
         context.getSharedPreferences("quick_replies", Context.MODE_PRIVATE)
             .getString("replies", null)?.let { root.put("quick_replies", it) }
 
-        SipAccountStore.load(context)?.let { acc ->
-            root.put("sip", JSONObject().apply {
-                put("displayName", acc.displayName)
-                put("username", acc.username)
-                put("domain", acc.domain)
-                put("password", acc.password)
-                put("port", acc.port)
-                put("transport", acc.transport.name)
+        val sipAccounts = SipAccountStore.loadAll(context)
+        if (sipAccounts.isNotEmpty()) {
+            root.put("sipAccounts", JSONArray().apply {
+                sipAccounts.forEach { acc ->
+                    put(JSONObject().apply {
+                        put("displayName", acc.displayName)
+                        put("username", acc.username)
+                        put("domain", acc.domain)
+                        put("password", acc.password)
+                        put("port", acc.port)
+                        put("transport", acc.transport.name)
+                    })
+                }
             })
         }
 
@@ -62,20 +67,20 @@ object BackupManager {
                 .edit().putString("replies", replies).apply()
         }
 
-        root.optJSONObject("sip")?.let { s ->
-            SipAccountStore.save(
-                context,
-                SipAccount(
-                    displayName = s.optString("displayName"),
-                    username = s.optString("username"),
-                    domain = s.optString("domain"),
-                    password = s.optString("password"),
-                    port = s.optInt("port", 5060),
-                    transport = runCatching { SipAccount.Transport.valueOf(s.optString("transport", "UDP")) }
-                        .getOrDefault(SipAccount.Transport.UDP)
-                )
-            )
+        fun sipFrom(s: JSONObject) = SipAccount(
+            displayName = s.optString("displayName"),
+            username = s.optString("username"),
+            domain = s.optString("domain"),
+            password = s.optString("password"),
+            port = s.optInt("port", 5060),
+            transport = runCatching { SipAccount.Transport.valueOf(s.optString("transport", "UDP")) }
+                .getOrDefault(SipAccount.Transport.UDP)
+        )
+        root.optJSONArray("sipAccounts")?.let { arr ->
+            SipAccountStore.saveAll(context, (0 until arr.length()).map { sipFrom(arr.getJSONObject(it)) })
         }
+        // Backward compatibility with the old single-account backup format.
+        root.optJSONObject("sip")?.let { SipAccountStore.addOrUpdate(context, sipFrom(it)) }
 
         context.getSharedPreferences("theme", Context.MODE_PRIVATE)
             .edit().putString("mode", root.optString("theme", "SYSTEM")).apply()

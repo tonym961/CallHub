@@ -17,18 +17,18 @@ object StubSipEngine : SipEngine {
 
     private var callbacks: SipEngine.CallCallbacks? = null
 
-    override fun register(account: SipAccount, listener: SipEngine.RegistrationListener) {
-        Log.i(TAG, "register(${account.id}) — STUB, no real SIP REGISTER sent")
-        isRegistered = true
-        listener.onRegistrationStateChanged(true, "stub: registrato (nessun stack SIP reale)")
+    override fun register(accounts: List<SipAccount>, listener: SipEngine.RegistrationListener) {
+        Log.i(TAG, "register(${accounts.size} account) — STUB, no real SIP REGISTER sent")
+        isRegistered = accounts.isNotEmpty()
+        listener.onRegistrationStateChanged(isRegistered, "stub: nessun stack SIP reale")
     }
 
     override fun unregister() {
         isRegistered = false
     }
 
-    override fun startCall(number: String, callbacks: SipEngine.CallCallbacks) {
-        Log.i(TAG, "startCall($number) — STUB")
+    override fun startCall(number: String, accountId: String?, callbacks: SipEngine.CallCallbacks) {
+        Log.i(TAG, "startCall($number, account=$accountId) — STUB")
         this.callbacks = callbacks
         callbacks.onRinging()
         callbacks.onConnected()
