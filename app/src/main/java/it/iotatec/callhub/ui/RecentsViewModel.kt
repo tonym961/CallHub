@@ -30,4 +30,10 @@ class RecentsViewModel(app: Application) : AndroidViewModel(app) {
     fun setNote(id: Long, note: String?) {
         viewModelScope.launch { repo.updateNote(id, note?.ifBlank { null }) }
     }
+
+    fun delete(event: CallEventEntity) {
+        viewModelScope.launch { repo.delete(getApplication(), event) }
+    }
+
+    suspend fun eventsForNumber(number: String): List<CallEventEntity> = repo.eventsForNumber(number)
 }

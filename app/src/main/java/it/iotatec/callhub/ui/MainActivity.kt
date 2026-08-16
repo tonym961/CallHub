@@ -216,7 +216,8 @@ private fun RecentsTab(
             events = events,
             modifier = Modifier.fillMaxWidth(),
             onCall = onCall,
-            onSaveNote = { id, note -> vm.setNote(id, note) }
+            onSaveNote = { id, note -> vm.setNote(id, note) },
+            onDelete = { vm.delete(it) }
         )
     }
 }

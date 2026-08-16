@@ -23,7 +23,10 @@ data class CallUiState(
     /** Wall-clock time the call connected, or 0 if not yet connected. */
     val connectTimeMillis: Long = 0L,
     /** True when there are ≥2 calls that can be merged into a conference. */
-    val canMerge: Boolean = false
+    val canMerge: Boolean = false,
+    /** Bitmask of available audio routes (CallAudioState.ROUTE_*). */
+    val supportedRoutes: Int = 0,
+    val audioRoute: Int = 0
 )
 
 /**
@@ -64,8 +67,15 @@ object CallManager {
     fun onAudioStateChanged(audioState: CallAudioState) {
         _state.value = _state.value.copy(
             isMuted = audioState.isMuted,
-            isSpeakerOn = audioState.route == CallAudioState.ROUTE_SPEAKER
+            isSpeakerOn = audioState.route == CallAudioState.ROUTE_SPEAKER,
+            supportedRoutes = audioState.supportedRouteMask,
+            audioRoute = audioState.route
         )
+    }
+
+    @Suppress("DEPRECATION")
+    fun setAudioRoute(route: Int) {
+        service?.setAudioRoute(route)
     }
 
     private val primary: Call? get() = calls.lastOrNull()

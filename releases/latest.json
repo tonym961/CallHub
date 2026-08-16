@@ -1,5 +1,5 @@
 {
-  "versionName": "1.3.0",
-  "apk": "https://github.com/tonym961/CallHub/releases/download/v1.3.0/CallHub-1.3.0-full.apk",
-  "notes": "1.3.0 — più account SIP (registrazione multipla + scelta per chiamata), package app.callhub.it, tab 'Recenti' allineata."
+  "versionName": "1.4.0",
+  "apk": "https://github.com/tonym961/CallHub/releases/download/v1.4.0/CallHub-1.4.0-full.apk",
+  "notes": "1.4.0 — parità dialer: dettaglio contatto + numeri multipli, dettaglio chiamata (blocca/aggiungi/elimina) + filtro Perse + foto nei Recenti, audio Bluetooth + prossimità in chiamata, caller-ID community online."
 }

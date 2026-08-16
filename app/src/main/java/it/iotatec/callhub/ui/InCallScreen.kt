@@ -15,17 +15,22 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
+import android.telecom.CallAudioState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.CallMerge
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.filled.Bluetooth
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.CallEnd
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Dialpad
 import androidx.compose.material.icons.filled.FiberManualRecord
+import androidx.compose.material.icons.filled.Headset
 import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.MicOff
 import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -103,7 +108,9 @@ fun InCallScreen(onFinished: () -> Unit) {
                 isMuted = state.isMuted,
                 isSpeakerOn = state.isSpeakerOn,
                 isOnHold = state.isOnHold,
-                canMerge = state.canMerge
+                canMerge = state.canMerge,
+                supportedRoutes = state.supportedRoutes,
+                audioRoute = state.audioRoute
             )
         }
         Spacer(Modifier.height(48.dp))
@@ -154,7 +161,7 @@ private fun IncomingControls(number: String?) {
 }
 
 @Composable
-private fun ActiveControls(isMuted: Boolean, isSpeakerOn: Boolean, isOnHold: Boolean, canMerge: Boolean) {
+private fun ActiveControls(isMuted: Boolean, isSpeakerOn: Boolean, isOnHold: Boolean, canMerge: Boolean, supportedRoutes: Int, audioRoute: Int) {
     val context = LocalContext.current
     var showKeypad by remember { mutableStateOf(false) }
     var recording by remember { mutableStateOf(CallRecorder.isRecording()) }
@@ -177,11 +184,27 @@ private fun ActiveControls(isMuted: Boolean, isSpeakerOn: Boolean, isOnHold: Boo
                     stringResource(R.string.action_keypad),
                     MaterialTheme.colorScheme.surfaceVariant
                 ) { showKeypad = true }
-                RoundButton(
-                    Icons.AutoMirrored.Filled.VolumeUp,
-                    stringResource(R.string.action_speaker),
-                    if (isSpeakerOn) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
-                ) { CallManager.toggleSpeaker() }
+                Box {
+                    var audioMenu by remember { mutableStateOf(false) }
+                    val hasBt = supportedRoutes and CallAudioState.ROUTE_BLUETOOTH != 0
+                    val hasWired = supportedRoutes and CallAudioState.ROUTE_WIRED_HEADSET != 0
+                    val audioIcon = when (audioRoute) {
+                        CallAudioState.ROUTE_BLUETOOTH -> Icons.Filled.Bluetooth
+                        CallAudioState.ROUTE_WIRED_HEADSET -> Icons.Filled.Headset
+                        else -> Icons.AutoMirrored.Filled.VolumeUp
+                    }
+                    RoundButton(
+                        audioIcon,
+                        stringResource(R.string.action_speaker),
+                        if (isSpeakerOn || audioRoute == CallAudioState.ROUTE_BLUETOOTH) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
+                    ) { if (hasBt || hasWired) audioMenu = true else CallManager.toggleSpeaker() }
+                    DropdownMenu(expanded = audioMenu, onDismissRequest = { audioMenu = false }) {
+                        DropdownMenuItem(text = { Text(stringResource(R.string.audio_earpiece)) }, onClick = { CallManager.setAudioRoute(CallAudioState.ROUTE_EARPIECE); audioMenu = false })
+                        DropdownMenuItem(text = { Text(stringResource(R.string.action_speaker)) }, onClick = { CallManager.setAudioRoute(CallAudioState.ROUTE_SPEAKER); audioMenu = false })
+                        if (hasBt) DropdownMenuItem(text = { Text(stringResource(R.string.audio_bluetooth)) }, onClick = { CallManager.setAudioRoute(CallAudioState.ROUTE_BLUETOOTH); audioMenu = false })
+                        if (hasWired) DropdownMenuItem(text = { Text(stringResource(R.string.audio_wired)) }, onClick = { CallManager.setAudioRoute(CallAudioState.ROUTE_WIRED_HEADSET); audioMenu = false })
+                    }
+                }
                 RoundButton(
                     Icons.Filled.Pause,
                     stringResource(R.string.action_hold),

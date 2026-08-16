@@ -28,4 +28,13 @@ interface CallEventDao {
 
     @Query("UPDATE call_events SET note = :note WHERE id = :id")
     suspend fun updateNote(id: Long, note: String?)
+
+    @Query("DELETE FROM call_events WHERE id = :id")
+    suspend fun delete(id: Long)
+
+    @Query("SELECT * FROM call_events WHERE phoneNumber = :number ORDER BY startTime DESC")
+    suspend fun eventsForNumber(number: String): List<CallEventEntity>
+
+    @Query("SELECT startTime FROM call_events WHERE id = :id")
+    suspend fun startTimeOf(id: Long): Long?
 }

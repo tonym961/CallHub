@@ -98,4 +98,16 @@
     <string name="dynamic_colors">Colori dinamici</string>
     <string name="settings_about">Info</string>
     <string name="privacy_policy">Informativa privacy</string>
+    <string name="action_edit">Modifica</string>
+    <string name="action_message">Messaggia</string>
+    <string name="action_delete_entry">Elimina</string>
+    <string name="filter_all">Tutte</string>
+    <string name="filter_missed">Perse</string>
+    <string name="action_add_contact">Aggiungi ai contatti</string>
+    <string name="audio_earpiece">Auricolare</string>
+    <string name="audio_bluetooth">Bluetooth</string>
+    <string name="audio_wired">Cuffie</string>
+    <string name="settings_reputation">Caller ID (lista community)</string>
+    <string name="reputation_url">URL lista reputazione</string>
+    <string name="action_refresh">Aggiorna</string>
 </resources>

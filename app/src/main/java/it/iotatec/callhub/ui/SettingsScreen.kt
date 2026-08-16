@@ -61,6 +61,7 @@ import it.iotatec.callhub.BuildConfig
 import it.iotatec.callhub.R
 import it.iotatec.callhub.data.repo.BackupManager
 import it.iotatec.callhub.data.repo.QuickRepliesRepository
+import it.iotatec.callhub.dialer.spam.CommunityReputationStore
 import it.iotatec.callhub.dialer.spam.SpamRepository
 import it.iotatec.callhub.dialer.spam.SystemBlocklist
 import it.iotatec.callhub.sip.SipAccount
@@ -197,6 +198,18 @@ private fun SpamSettings(modifier: Modifier) {
                     blocked = SpamRepository.blockedNumbers(context).toList()
                 }) { Text(stringResource(R.string.action_remove)) }
             }
+        }
+
+        HorizontalDivider(Modifier.padding(vertical = 8.dp))
+        Text(stringResource(R.string.settings_reputation), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold)
+        val scope = rememberCoroutineScope()
+        var repUrl by remember { mutableStateOf(CommunityReputationStore.url(context)) }
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            OutlinedTextField(repUrl, { repUrl = it }, label = { Text(stringResource(R.string.reputation_url)) }, singleLine = true, modifier = Modifier.weight(1f))
+            Button(onClick = {
+                CommunityReputationStore.setUrl(context, repUrl)
+                scope.launch { CommunityReputationStore.refresh(context) }
+            }, enabled = repUrl.isNotBlank()) { Text(stringResource(R.string.action_refresh)) }
         }
     }
 }
