@@ -110,4 +110,7 @@
     <string name="settings_reputation">Caller ID (lista community)</string>
     <string name="reputation_url">URL lista reputazione</string>
     <string name="action_refresh">Aggiorna</string>
+    <string name="settings_security">Sicurezza</string>
+    <string name="app_lock">Blocco app (biometria / PIN)</string>
+    <string name="action_unlock">Sblocca</string>
 </resources>

@@ -129,4 +129,7 @@
     <string name="settings_reputation">Caller ID (community list)</string>
     <string name="reputation_url">Reputation list URL</string>
     <string name="action_refresh">Refresh</string>
+    <string name="settings_security">Security</string>
+    <string name="app_lock">App lock (biometric / PIN)</string>
+    <string name="action_unlock">Unlock</string>
 </resources>

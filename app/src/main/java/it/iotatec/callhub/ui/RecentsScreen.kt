@@ -30,15 +30,20 @@ import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material.icons.filled.Videocam
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -72,6 +77,7 @@ import java.util.concurrent.TimeUnit
 
 private val Red = Color(0xFFD32F2F)
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecentsScreen(
     events: List<CallEventEntity>,
@@ -119,12 +125,27 @@ fun RecentsScreen(
         }
         LazyColumn(Modifier.fillMaxSize()) {
             items(grouped, key = { it.first.id }) { (event, count) ->
-                RecentRow(
-                    event, count,
-                    onOpen = { event.phoneNumber?.let { detailNumber = it } },
-                    onCall = { event.phoneNumber?.let(onCall) },
-                    onEditNote = { editing = event }
+                val dismissState = rememberSwipeToDismissBoxState(
+                    confirmValueChange = { v -> if (v == SwipeToDismissBoxValue.EndToStart) { onDelete(event); true } else false }
                 )
+                SwipeToDismissBox(
+                    state = dismissState,
+                    enableDismissFromStartToEnd = false,
+                    backgroundContent = {
+                        Box(Modifier.fillMaxSize().background(Red).padding(end = 24.dp), contentAlignment = Alignment.CenterEnd) {
+                            Icon(Icons.Filled.Delete, contentDescription = null, tint = Color.White)
+                        }
+                    }
+                ) {
+                    Surface(color = MaterialTheme.colorScheme.surface) {
+                        RecentRow(
+                            event, count,
+                            onOpen = { event.phoneNumber?.let { detailNumber = it } },
+                            onCall = { event.phoneNumber?.let(onCall) },
+                            onEditNote = { editing = event }
+                        )
+                    }
+                }
                 HorizontalDivider()
             }
         }

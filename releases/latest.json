@@ -1,5 +1,5 @@
 {
-  "versionName": "1.4.0",
-  "apk": "https://github.com/tonym961/CallHub/releases/download/v1.4.0/CallHub-1.4.0-full.apk",
-  "notes": "1.4.0 — parità dialer: dettaglio contatto + numeri multipli, dettaglio chiamata (blocca/aggiungi/elimina) + filtro Perse + foto nei Recenti, audio Bluetooth + prossimità in chiamata, caller-ID community online."
+  "versionName": "1.5.0",
+  "apk": "https://github.com/tonym961/CallHub/releases/download/v1.5.0/CallHub-1.5.0-full.apk",
+  "notes": "1.5.0 — rifiniture: blocco app biometrico/PIN, swipe-per-eliminare nei Recenti, layout adattivo (NavigationRail su tablet/landscape)."
 }

@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Backup
 import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material3.Button
 import androidx.compose.material3.FilterChip
@@ -64,6 +65,7 @@ import it.iotatec.callhub.data.repo.QuickRepliesRepository
 import it.iotatec.callhub.dialer.spam.CommunityReputationStore
 import it.iotatec.callhub.dialer.spam.SpamRepository
 import it.iotatec.callhub.dialer.spam.SystemBlocklist
+import it.iotatec.callhub.security.AppLock
 import it.iotatec.callhub.sip.SipAccount
 import it.iotatec.callhub.sip.SipAccountStore
 import it.iotatec.callhub.sip.SipManager
@@ -78,6 +80,7 @@ enum class SettingsRoute(@StringRes val labelRes: Int, val icon: ImageVector) {
     REPLIES(R.string.settings_quick_replies, Icons.AutoMirrored.Filled.Message),
     SIP(R.string.settings_sip_title, Icons.Filled.Call),
     BACKUP(R.string.settings_backup, Icons.Filled.Backup),
+    SECURITY(R.string.settings_security, Icons.Filled.Lock),
     ABOUT(R.string.settings_about, Icons.Filled.Info)
 }
 
@@ -90,6 +93,7 @@ fun SettingsScreen(route: SettingsRoute?, onOpen: (SettingsRoute) -> Unit, modif
         SettingsRoute.REPLIES -> RepliesSettings(modifier)
         SettingsRoute.SIP -> SipSettings(modifier)
         SettingsRoute.BACKUP -> BackupSettings(modifier)
+        SettingsRoute.SECURITY -> SecuritySettings(modifier)
         SettingsRoute.ABOUT -> AboutSettings(modifier)
     }
 }
@@ -323,6 +327,18 @@ private fun BackupSettings(modifier: Modifier) {
                     blocklistUrl = ""
                 }
             }, enabled = blocklistUrl.isNotBlank()) { Text(stringResource(R.string.action_import)) }
+        }
+    }
+}
+
+@Composable
+private fun SecuritySettings(modifier: Modifier) {
+    val context = LocalContext.current
+    DetailColumn(modifier) {
+        var lock by remember { mutableStateOf(AppLock.enabled(context)) }
+        SwitchRow(stringResource(R.string.app_lock), lock) { enabled ->
+            lock = enabled
+            AppLock.setEnabled(context, enabled)
         }
     }
 }

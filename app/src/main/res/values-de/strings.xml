@@ -110,4 +110,7 @@
     <string name="settings_reputation">Anrufer-ID (Community-Liste)</string>
     <string name="reputation_url">URL der Reputationsliste</string>
     <string name="action_refresh">Aktualisieren</string>
+    <string name="settings_security">Sicherheit</string>
+    <string name="app_lock">App-Sperre (Biometrie / PIN)</string>
+    <string name="action_unlock">Entsperren</string>
 </resources>

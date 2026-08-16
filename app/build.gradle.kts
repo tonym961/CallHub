@@ -29,8 +29,8 @@ android {
         //   MINOR — nuove funzionalità retrocompatibili
         //   PATCH — solo correzioni di bug
         // versionCode = MAJOR*10000 + MINOR*100 + PATCH (monotòno crescente per lo store).
-        versionCode = 10400
-        versionName = "1.4.0"
+        versionCode = 10500
+        versionName = "1.5.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -122,6 +122,10 @@ dependencies {
 
     // Encrypted storage for the SIP password.
     implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
+    // Biometric / device-credential app lock (FragmentActivity + registerForActivityResult).
+    implementation("androidx.biometric:biometric:1.1.0")
+    implementation("androidx.fragment:fragment-ktx:1.8.5")
 
     // Real SIP stack (GPLv3). The app is licensed GPLv3 accordingly.
     implementation(libs.linphone.sdk)
