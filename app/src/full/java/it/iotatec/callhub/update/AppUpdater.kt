@@ -6,6 +6,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.core.content.FileProvider
 import it.iotatec.callhub.BuildConfig
+import it.iotatec.callhub.util.SemVer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -28,7 +29,7 @@ object AppUpdater {
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
                 val latest = fetchLatestRelease() ?: return@launch
-                if (!isNewer(latest.version, BuildConfig.VERSION_NAME)) {
+                if (!SemVer.isNewer(latest.version, BuildConfig.VERSION_NAME)) {
                     Log.i(TAG, "Up to date (${BuildConfig.VERSION_NAME})")
                     return@launch
                 }
@@ -40,9 +41,33 @@ object AppUpdater {
 
     private data class Release(val version: String, val apkUrl: String)
 
-    private fun fetchLatestRelease(): Release? {
-        // The deploy key can push code but not create GitHub Releases, so the
-        // manifest + APK live in /releases and are read via the raw repo URL.
+    /** Prefer a real GitHub Release; fall back to /releases/latest.json in the repo. */
+    private fun fetchLatestRelease(): Release? = fetchFromReleasesApi() ?: fetchFromRawJson()
+
+    private fun fetchFromReleasesApi(): Release? = try {
+        val conn = (URL("https://api.github.com/repos/${BuildConfig.GITHUB_OWNER}/${BuildConfig.GITHUB_REPO}/releases/latest")
+            .openConnection() as HttpURLConnection).apply {
+            connectTimeout = 8000
+            readTimeout = 8000
+            setRequestProperty("Accept", "application/vnd.github+json")
+        }
+        if (conn.responseCode != 200) null
+        else conn.inputStream.bufferedReader().use { reader ->
+            val obj = JSONObject(reader.readText())
+            val version = obj.getString("tag_name").removePrefix("v").trim()
+            val assets = obj.getJSONArray("assets")
+            var apkUrl: String? = null
+            for (i in 0 until assets.length()) {
+                val a = assets.getJSONObject(i)
+                if (a.getString("name").endsWith(".apk")) { apkUrl = a.getString("browser_download_url"); break }
+            }
+            apkUrl?.let { Release(version, it) }
+        }
+    } catch (e: Exception) {
+        null
+    }
+
+    private fun fetchFromRawJson(): Release? = try {
         val base = "https://raw.githubusercontent.com/${BuildConfig.GITHUB_OWNER}/${BuildConfig.GITHUB_REPO}/main/releases"
         val conn = (URL("$base/latest.json").openConnection() as HttpURLConnection).apply {
             connectTimeout = 8000
@@ -52,9 +77,10 @@ object AppUpdater {
             val obj = JSONObject(reader.readText())
             val version = obj.getString("versionName").trim()
             val apk = obj.getString("apk")
-            val apkUrl = if (apk.startsWith("http")) apk else "$base/$apk"
-            return Release(version, apkUrl)
+            Release(version, if (apk.startsWith("http")) apk else "$base/$apk")
         }
+    } catch (e: Exception) {
+        null
     }
 
     private fun downloadApk(activity: Activity, apkUrl: String, version: String): File? {

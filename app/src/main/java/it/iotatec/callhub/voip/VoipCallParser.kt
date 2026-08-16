@@ -16,17 +16,20 @@ import it.iotatec.callhub.data.model.CallDirection
  */
 object VoipCallParser {
 
+    // Keywords in IT / EN / DE.
     private val MISSED_KEYWORDS = listOf(
-        "missed", "persa", "perse", "senza risposta"
+        "missed", "persa", "perse", "senza risposta", "verpasst"
     )
     private val VIDEO_KEYWORDS = listOf(
         "video"
     )
     private val INCOMING_KEYWORDS = listOf(
-        "incoming", "in arrivo", "chiamata in arrivo", "sta chiamando", "is calling"
+        "incoming", "in arrivo", "chiamata in arrivo", "sta chiamando", "is calling",
+        "eingehend", "ruft an"
     )
     private val ONGOING_KEYWORDS = listOf(
-        "ongoing", "in corso", "chiamata in corso", "connected", "connesso", "tap to return"
+        "ongoing", "in corso", "chiamata in corso", "connected", "connesso", "tap to return",
+        "laufend", "verbunden", "aktiver anruf"
     )
 
     data class Parsed(

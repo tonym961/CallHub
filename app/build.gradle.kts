@@ -1,8 +1,18 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+}
+
+// Release signing config is read from keystore.properties (gitignored). Absent →
+// release stays unsigned (useful for CI/dev without the private key).
+val keystorePropsFile = rootProject.file("keystore.properties")
+val keystoreProps = Properties().apply {
+    if (keystorePropsFile.exists()) load(FileInputStream(keystorePropsFile))
 }
 
 android {
@@ -19,8 +29,8 @@ android {
         //   MINOR — nuove funzionalità retrocompatibili
         //   PATCH — solo correzioni di bug
         // versionCode = MAJOR*10000 + MINOR*100 + PATCH (monotòno crescente per lo store).
-        versionCode = 10000
-        versionName = "1.0.0"
+        versionCode = 10100
+        versionName = "1.1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -39,7 +49,7 @@ android {
             dimension = "distribution"
             applicationIdSuffix = ".full"
             versionNameSuffix = "-full"
-            resValue("string", "app_name", "CallHub Full")
+            resValue("string", "app_name", "CallHub")
             // GitHub repo used by the sideload auto-updater (full flavor only).
             buildConfigField("String", "GITHUB_OWNER", "\"tonym961\"")
             buildConfigField("String", "GITHUB_REPO", "\"CallHub\"")
@@ -50,17 +60,30 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            if (keystorePropsFile.exists()) {
+                storeFile = file(keystoreProps["storeFile"] as String)
+                storePassword = keystoreProps["storePassword"] as String
+                keyAlias = keystoreProps["keyAlias"] as String
+                keyPassword = keystoreProps["keyPassword"] as String
+            }
+        }
+    }
+
     buildTypes {
         debug {
             isMinifyEnabled = false
         }
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            // R8/minify disabled for now: liblinphone uses JNI/reflection and the
+            // SIP path can't be verified from here, so the release must behave like
+            // the tested debug build. Enable + test R8 in a later version.
+            isMinifyEnabled = false
+            isShrinkResources = false
+            if (keystorePropsFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
         }
     }
 
@@ -98,6 +121,11 @@ dependencies {
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.kotlinx.coroutines.android)
 
+    // Encrypted storage for the SIP password.
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+
     // Real SIP stack (GPLv3). The app is licensed GPLv3 accordingly.
     implementation(libs.linphone.sdk)
+
+    testImplementation("junit:junit:4.13.2")
 }

@@ -13,3 +13,6 @@
 !releases/*.apk
 *.keystore
 !debug.keystore
+# Signing secrets — never commit
+keystore.properties
+/.config/

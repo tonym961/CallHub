@@ -3,6 +3,8 @@ package it.iotatec.callhub.data.repo
 import android.content.Context
 import it.iotatec.callhub.dialer.spam.SpamRepository
 import it.iotatec.callhub.dialer.spam.SystemBlocklist
+import it.iotatec.callhub.sip.SipAccount
+import it.iotatec.callhub.sip.SipAccountStore
 import it.iotatec.callhub.ui.AppTheme
 import org.json.JSONArray
 import org.json.JSONObject
@@ -24,15 +26,14 @@ object BackupManager {
         context.getSharedPreferences("quick_replies", Context.MODE_PRIVATE)
             .getString("replies", null)?.let { root.put("quick_replies", it) }
 
-        val sip = context.getSharedPreferences("sip_account", Context.MODE_PRIVATE)
-        if (sip.contains("username")) {
+        SipAccountStore.load(context)?.let { acc ->
             root.put("sip", JSONObject().apply {
-                put("displayName", sip.getString("displayName", ""))
-                put("username", sip.getString("username", ""))
-                put("domain", sip.getString("domain", ""))
-                put("password", sip.getString("password", ""))
-                put("port", sip.getInt("port", 5060))
-                put("transport", sip.getString("transport", "UDP"))
+                put("displayName", acc.displayName)
+                put("username", acc.username)
+                put("domain", acc.domain)
+                put("password", acc.password)
+                put("port", acc.port)
+                put("transport", acc.transport.name)
             })
         }
 
@@ -62,14 +63,18 @@ object BackupManager {
         }
 
         root.optJSONObject("sip")?.let { s ->
-            context.getSharedPreferences("sip_account", Context.MODE_PRIVATE).edit()
-                .putString("displayName", s.optString("displayName"))
-                .putString("username", s.optString("username"))
-                .putString("domain", s.optString("domain"))
-                .putString("password", s.optString("password"))
-                .putInt("port", s.optInt("port", 5060))
-                .putString("transport", s.optString("transport", "UDP"))
-                .apply()
+            SipAccountStore.save(
+                context,
+                SipAccount(
+                    displayName = s.optString("displayName"),
+                    username = s.optString("username"),
+                    domain = s.optString("domain"),
+                    password = s.optString("password"),
+                    port = s.optInt("port", 5060),
+                    transport = runCatching { SipAccount.Transport.valueOf(s.optString("transport", "UDP")) }
+                        .getOrDefault(SipAccount.Transport.UDP)
+                )
+            )
         }
 
         context.getSharedPreferences("theme", Context.MODE_PRIVATE)

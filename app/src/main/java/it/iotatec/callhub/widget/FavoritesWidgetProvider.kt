@@ -1,13 +1,18 @@
 package it.iotatec.callhub.widget
 
+import android.Manifest
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.provider.ContactsContract
 import android.view.View
 import android.widget.RemoteViews
+import androidx.core.content.ContextCompat
 import it.iotatec.callhub.R
 import it.iotatec.callhub.data.repo.FavoritesRepository
 import it.iotatec.callhub.ui.MainActivity
@@ -34,7 +39,7 @@ class FavoritesWidgetProvider : AppWidgetProvider() {
             buttons.forEachIndexed { i, btnId ->
                 if (i < favorites.size) {
                     val number = favorites[i]
-                    views.setTextViewText(btnId, number)
+                    views.setTextViewText(btnId, displayLabel(context, number))
                     views.setViewVisibility(btnId, View.VISIBLE)
                     val callIntent = Intent(context, FavoritesWidgetProvider::class.java).apply {
                         action = ACTION_CALL
@@ -53,6 +58,20 @@ class FavoritesWidgetProvider : AppWidgetProvider() {
             }
             manager.updateAppWidget(widgetId, views)
         }
+    }
+
+    /** Contact name for [number] if in the address book, otherwise the number. */
+    private fun displayLabel(context: Context, number: String): String {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)
+            != PackageManager.PERMISSION_GRANTED
+        ) return number
+        val uri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(number))
+        context.contentResolver.query(
+            uri, arrayOf(ContactsContract.PhoneLookup.DISPLAY_NAME), null, null, null
+        )?.use { c ->
+            if (c.moveToFirst()) return c.getString(0)?.takeIf { it.isNotBlank() } ?: number
+        }
+        return number
     }
 
     override fun onReceive(context: Context, intent: Intent) {
