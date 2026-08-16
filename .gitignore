@@ -8,6 +8,9 @@
 /captures/
 .externalNativeBuild/
 .cxx/
+.kotlin/
+# Play Store bundle is a build artifact (uploaded to the console, not the repo)
+*.aab
 *.apk
 # Published sideload APK lives in the repo (auto-update reads it via raw URL)
 !releases/*.apk

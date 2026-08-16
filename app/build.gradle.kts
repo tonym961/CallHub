@@ -29,8 +29,8 @@ android {
         //   MINOR — nuove funzionalità retrocompatibili
         //   PATCH — solo correzioni di bug
         // versionCode = MAJOR*10000 + MINOR*100 + PATCH (monotòno crescente per lo store).
-        versionCode = 10500
-        versionName = "1.5.0"
+        versionCode = 10600
+        versionName = "1.6.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 

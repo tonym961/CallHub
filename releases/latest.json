@@ -1,5 +1,5 @@
 {
-  "versionName": "1.5.0",
-  "apk": "https://github.com/tonym961/CallHub/releases/download/v1.5.0/CallHub-1.5.0-full.apk",
-  "notes": "1.5.0 — rifiniture: blocco app biometrico/PIN, swipe-per-eliminare nei Recenti, layout adattivo (NavigationRail su tablet/landscape)."
+  "versionName": "1.6.0",
+  "apk": "https://github.com/tonym961/CallHub/releases/download/v1.6.0/CallHub-1.6.0-full.apk",
+  "notes": "1.6.0 — rilevamento messenger: nel dettaglio contatto proponiamo 'Chiama tramite app' se il numero è su WhatsApp/WhatsApp Business/Telegram. Tastierino pro: toni DTMF + vibrazione, pressione lunga 0→'+', 1→segreteria, 2-9→chiamata rapida preferiti, incolla numero dagli appunti."
 }

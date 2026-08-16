@@ -59,6 +59,8 @@ import it.iotatec.callhub.R
 import it.iotatec.callhub.data.repo.ContactDetail
 import it.iotatec.callhub.data.repo.ContactsRepository
 import it.iotatec.callhub.data.repo.FavoritesRepository
+import it.iotatec.callhub.data.repo.MessengerApps
+import it.iotatec.callhub.data.repo.MessengerCall
 import it.iotatec.callhub.data.repo.PhoneContact
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -68,6 +70,12 @@ private val AvatarColors = listOf(
     Color(0xFFEF6C00), Color(0xFF2E7D32), Color(0xFF4527A0), Color(0xFFAD1457)
 )
 private fun colorFor(name: String) = AvatarColors[(name.hashCode() and 0x7FFFFFFF) % AvatarColors.size]
+
+private fun messengerColor(app: String) = when {
+    app.startsWith("WhatsApp") -> Color(0xFF25D366)
+    app.startsWith("Telegram") -> Color(0xFF229ED9)
+    else -> Color(0xFF9E9E9E)
+}
 
 private fun openSms(context: android.content.Context, number: String) {
     runCatching { context.startActivity(Intent(Intent.ACTION_SENDTO, Uri.parse("smsto:$number")).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) }
@@ -141,6 +149,9 @@ private fun ContactDetailView(contactId: Long, onBack: () -> Unit, onCall: (Stri
     val detail by produceState<ContactDetail?>(initialValue = null, contactId) {
         value = withContext(Dispatchers.IO) { ContactsRepository.loadDetail(context, contactId) }
     }
+    val messengers by produceState<List<MessengerCall>>(initialValue = emptyList(), contactId) {
+        value = withContext(Dispatchers.IO) { MessengerApps.forContact(context, contactId) }
+    }
 
     Column(modifier.fillMaxSize()) {
         Row(Modifier.fillMaxWidth().padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
@@ -170,6 +181,25 @@ private fun ContactDetailView(contactId: Long, onBack: () -> Unit, onCall: (Stri
                 }) {
                     Icon(Icons.Filled.Edit, contentDescription = null, modifier = Modifier.size(18.dp))
                     Spacer(Modifier.size(6.dp)); Text(stringResource(R.string.action_edit))
+                }
+            }
+            if (messengers.isNotEmpty()) {
+                Spacer(Modifier.height(14.dp))
+                Text(
+                    stringResource(R.string.call_via_app),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.height(6.dp))
+                messengers.forEach { m ->
+                    OutlinedButton(
+                        onClick = { MessengerApps.call(context, m) },
+                        modifier = Modifier.fillMaxWidth().padding(vertical = 3.dp)
+                    ) {
+                        Box(Modifier.size(10.dp).clip(CircleShape).background(messengerColor(m.app)))
+                        Spacer(Modifier.size(8.dp))
+                        Text(m.label)
+                    }
                 }
             }
         }

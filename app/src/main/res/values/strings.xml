@@ -20,6 +20,7 @@
 
     <!-- Dialpad / contacts -->
     <string name="action_call">Call</string>
+    <string name="call_via_app">Call via app</string>
     <string name="action_delete">Delete</string>
     <string name="search_contact">Search contact</string>
     <string name="no_contacts">No contacts</string>

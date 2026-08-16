@@ -14,6 +14,7 @@
     <string name="unknown_caller">Unbekannt</string>
 
     <string name="action_call">Anrufen</string>
+    <string name="call_via_app">Über App anrufen</string>
     <string name="action_delete">Löschen</string>
     <string name="search_contact">Kontakt suchen</string>
     <string name="no_contacts">Keine Kontakte</string>
