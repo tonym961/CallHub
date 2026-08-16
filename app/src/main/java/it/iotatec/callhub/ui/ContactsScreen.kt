@@ -2,7 +2,9 @@ package it.iotatec.callhub.ui
 
 import android.graphics.BitmapFactory
 import android.net.Uri
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,9 +18,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.StarBorder
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
@@ -41,16 +44,25 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import it.iotatec.callhub.R
 import it.iotatec.callhub.data.repo.ContactsRepository
 import it.iotatec.callhub.data.repo.FavoritesRepository
 import it.iotatec.callhub.data.repo.PhoneContact
-import it.iotatec.callhub.util.CallPlacer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+private val AvatarColors = listOf(
+    Color(0xFF1565C0), Color(0xFF6A1B9A), Color(0xFF00838F), Color(0xFFC62828),
+    Color(0xFFEF6C00), Color(0xFF2E7D32), Color(0xFF4527A0), Color(0xFFAD1457)
+)
+
+private fun colorFor(name: String): Color =
+    AvatarColors[(name.hashCode() and 0x7FFFFFFF) % AvatarColors.size]
+
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ContactsScreen(modifier: Modifier = Modifier) {
+fun ContactsScreen(modifier: Modifier = Modifier, onCall: (String) -> Unit = {}) {
     val context = LocalContext.current
     var query by remember { mutableStateOf("") }
     var favorites by remember { mutableStateOf(FavoritesRepository.favorites(context)) }
@@ -61,12 +73,12 @@ fun ContactsScreen(modifier: Modifier = Modifier) {
 
     val filtered = remember(contacts, query) {
         if (query.isBlank()) contacts
-        else contacts.filter {
-            it.name.contains(query, ignoreCase = true) || it.number.contains(query)
-        }
+        else contacts.filter { it.name.contains(query, true) || it.number.contains(query) }
     }
-    val favoriteContacts = remember(contacts, favorites) {
-        contacts.filter { favorites.contains(it.number) }
+    val favoriteContacts = remember(contacts, favorites) { contacts.filter { favorites.contains(it.number) } }
+    val grouped = remember(filtered) {
+        filtered.groupBy { it.name.trim().firstOrNull()?.uppercaseChar()?.takeIf { c -> c.isLetter() } ?: '#' }
+            .toSortedMap()
     }
 
     val onToggleFav: (String) -> Unit = { number ->
@@ -78,36 +90,47 @@ fun ContactsScreen(modifier: Modifier = Modifier) {
         OutlinedTextField(
             value = query,
             onValueChange = { query = it },
-            label = { Text(stringResource(R.string.search_contact)) },
+            leadingIcon = { Icon(Icons.Filled.Search, contentDescription = null) },
+            placeholder = { Text(stringResource(R.string.search_contact)) },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth().padding(16.dp)
+            shape = CircleShape,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp)
         )
+
         if (filtered.isEmpty() && favoriteContacts.isEmpty()) {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(stringResource(R.string.no_contacts), color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
-        } else {
-            LazyColumn(Modifier.fillMaxSize()) {
-                if (query.isBlank() && favoriteContacts.isNotEmpty()) {
-                    item {
-                        Text(
-                            stringResource(R.string.favorites_title),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.padding(start = 16.dp, top = 8.dp, bottom = 4.dp)
-                        )
-                    }
-                    items(favoriteContacts, key = { "fav_" + it.name + it.number }) { c ->
-                        ContactRow(c, isFavorite = true, onToggleFav = onToggleFav) { CallPlacer.place(context, c.number) }
-                        HorizontalDivider()
-                    }
+            return@Column
+        }
+
+        LazyColumn(Modifier.fillMaxSize()) {
+            if (query.isBlank() && favoriteContacts.isNotEmpty()) {
+                stickyHeader { SectionHeader(stringResource(R.string.favorites_title)) }
+                items(favoriteContacts, key = { "fav_" + it.name + it.number }) { c ->
+                    ContactRow(c, true, onToggleFav) { onCall(c.number) }
                 }
-                items(filtered, key = { it.name + it.number }) { c ->
-                    ContactRow(c, isFavorite = favorites.contains(c.number), onToggleFav = onToggleFav) { CallPlacer.place(context, c.number) }
-                    HorizontalDivider()
+            }
+            grouped.forEach { (letter, list) ->
+                stickyHeader { SectionHeader(letter.toString()) }
+                items(list, key = { it.name + it.number }) { c ->
+                    ContactRow(c, favorites.contains(c.number), onToggleFav) { onCall(c.number) }
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun SectionHeader(text: String) {
+    Surface(color = MaterialTheme.colorScheme.surface, modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text,
+            style = MaterialTheme.typography.labelLarge,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(start = 20.dp, top = 10.dp, bottom = 4.dp)
+        )
     }
 }
 
@@ -119,24 +142,21 @@ private fun ContactRow(
     onCall: () -> Unit
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onCall)
+            .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        Row(
-            modifier = Modifier.weight(1f).clickable(onClick = onCall),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            ContactAvatar(contact)
-            Column {
-                Text(contact.name, fontWeight = FontWeight.Medium)
-                Text(contact.number, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-            }
+        ContactAvatar(contact)
+        Column(Modifier.weight(1f)) {
+            Text(contact.name, fontWeight = FontWeight.Medium, style = MaterialTheme.typography.bodyLarge)
+            Text(contact.number, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         IconButton(onClick = { onToggleFav(contact.number) }) {
             Icon(
-                imageVector = if (isFavorite) Icons.Filled.Star else Icons.Filled.StarBorder,
+                if (isFavorite) Icons.Filled.Star else Icons.Filled.StarBorder,
                 contentDescription = stringResource(if (isFavorite) R.string.remove_favorite else R.string.add_favorite),
                 tint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -151,22 +171,33 @@ private fun ContactAvatar(contact: PhoneContact) {
         value = contact.photoUri?.let { uri ->
             withContext(Dispatchers.IO) {
                 runCatching {
-                    context.contentResolver.openInputStream(Uri.parse(uri))?.use { stream ->
-                        BitmapFactory.decodeStream(stream)?.asImageBitmap()
+                    context.contentResolver.openInputStream(Uri.parse(uri))?.use { s ->
+                        BitmapFactory.decodeStream(s)?.asImageBitmap()
                     }
                 }.getOrNull()
             }
         }
     }
 
-    Surface(shape = CircleShape, color = MaterialTheme.colorScheme.primaryContainer, modifier = Modifier.size(44.dp)) {
-        val bitmap = photo
-        if (bitmap != null) {
-            Image(bitmap = bitmap, contentDescription = contact.name, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
-        } else {
-            Box(contentAlignment = Alignment.Center) {
-                Text(contact.name.firstOrNull()?.uppercase() ?: "?", color = MaterialTheme.colorScheme.onPrimaryContainer, fontWeight = FontWeight.Bold)
-            }
+    val bitmap = photo
+    if (bitmap != null) {
+        Image(
+            bitmap = bitmap,
+            contentDescription = contact.name,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier.size(46.dp).clip(CircleShape)
+        )
+    } else {
+        Box(
+            modifier = Modifier.size(46.dp).clip(CircleShape).background(colorFor(contact.name)),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                contact.name.firstOrNull()?.uppercase() ?: "?",
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp
+            )
         }
     }
 }

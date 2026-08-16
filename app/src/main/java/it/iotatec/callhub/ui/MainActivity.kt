@@ -4,6 +4,7 @@ import android.Manifest
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
@@ -12,19 +13,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Contacts
 import androidx.compose.material.icons.filled.Dialpad
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import it.iotatec.callhub.R
 import it.iotatec.callhub.update.AppUpdater
+import it.iotatec.callhub.util.CallingAccounts
 import it.iotatec.callhub.util.CallPlacer
 import it.iotatec.callhub.util.DefaultDialerHelper
 
@@ -105,18 +111,40 @@ private fun MainScaffold(
 ) {
     val context = LocalContext.current
     var tab by remember { mutableStateOf(Tab.RECENTS) }
+    var settingsRoute by remember { mutableStateOf<SettingsRoute?>(null) }
+    var pendingCall by remember { mutableStateOf<String?>(null) }
+    val inSettingsDetail = tab == Tab.SETTINGS && settingsRoute != null
+
+    // Shared call handler: ask which SIM / SIP account when there is more than one.
+    val onCall: (String) -> Unit = { number ->
+        val options = CallingAccounts.list(context)
+        if (options.size <= 1) CallPlacer.place(context, number, options.firstOrNull()?.handle)
+        else pendingCall = number
+    }
 
     LaunchedEffect(Unit) { vm.refreshNativeCallLog() }
+    BackHandler(enabled = inSettingsDetail) { settingsRoute = null }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text(stringResource(tab.labelRes)) }) },
+        topBar = {
+            TopAppBar(
+                title = { Text(stringResource(if (inSettingsDetail) settingsRoute!!.labelRes else tab.labelRes)) },
+                navigationIcon = {
+                    if (inSettingsDetail) {
+                        IconButton(onClick = { settingsRoute = null }) {
+                            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
+                        }
+                    }
+                }
+            )
+        },
         bottomBar = {
             NavigationBar {
                 Tab.entries.forEach { t ->
                     val label = stringResource(t.labelRes)
                     NavigationBarItem(
                         selected = tab == t,
-                        onClick = { tab = t },
+                        onClick = { settingsRoute = null; tab = t },
                         icon = { Icon(t.icon, contentDescription = label) },
                         label = { Text(label) }
                     )
@@ -126,12 +154,29 @@ private fun MainScaffold(
     ) { padding ->
         Column(modifier = Modifier.padding(padding).fillMaxSize()) {
             when (tab) {
-                Tab.RECENTS -> RecentsTab(onSetDefaultDialer, onOpenNotificationAccess, vm)
-                Tab.DIALPAD -> DialpadScreen()
-                Tab.CONTACTS -> ContactsScreen()
-                Tab.SETTINGS -> SettingsScreen()
+                Tab.RECENTS -> RecentsTab(onSetDefaultDialer, onOpenNotificationAccess, vm, onCall)
+                Tab.DIALPAD -> DialpadScreen(onCall = onCall)
+                Tab.CONTACTS -> ContactsScreen(onCall = onCall)
+                Tab.SETTINGS -> SettingsScreen(route = settingsRoute, onOpen = { settingsRoute = it })
             }
         }
+    }
+
+    pendingCall?.let { number ->
+        AlertDialog(
+            onDismissRequest = { pendingCall = null },
+            confirmButton = {},
+            title = { Text(stringResource(R.string.choose_sim)) },
+            text = {
+                Column {
+                    CallingAccounts.list(context).forEach { opt ->
+                        TextButton(onClick = { CallPlacer.place(context, number, opt.handle); pendingCall = null }) {
+                            Text(opt.label)
+                        }
+                    }
+                }
+            }
+        )
     }
 }
 
@@ -139,7 +184,8 @@ private fun MainScaffold(
 private fun RecentsTab(
     onSetDefaultDialer: () -> Unit,
     onOpenNotificationAccess: () -> Unit,
-    vm: RecentsViewModel
+    vm: RecentsViewModel,
+    onCall: (String) -> Unit
 ) {
     val context = LocalContext.current
     val events by vm.events.collectAsState()
@@ -169,7 +215,7 @@ private fun RecentsTab(
         RecentsScreen(
             events = events,
             modifier = Modifier.fillMaxWidth(),
-            onCall = { number -> CallPlacer.place(context, number) },
+            onCall = onCall,
             onSaveNote = { id, note -> vm.setNote(id, note) }
         )
     }

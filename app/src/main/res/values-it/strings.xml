@@ -96,4 +96,6 @@
     <string name="note_label">Nota</string>
     <string name="search_calls">Cerca chiamate</string>
     <string name="dynamic_colors">Colori dinamici</string>
+    <string name="settings_about">Info</string>
+    <string name="privacy_policy">Informativa privacy</string>
 </resources>

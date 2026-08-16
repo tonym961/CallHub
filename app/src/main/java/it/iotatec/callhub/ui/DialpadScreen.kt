@@ -16,14 +16,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material.icons.filled.Call
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,22 +40,18 @@ import androidx.compose.ui.res.stringResource
 import it.iotatec.callhub.R
 import it.iotatec.callhub.data.repo.ContactsRepository
 import it.iotatec.callhub.data.repo.PhoneContact
-import it.iotatec.callhub.util.CallPlacer
-import it.iotatec.callhub.util.SimSelector
 import it.iotatec.callhub.util.T9
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
-fun DialpadScreen(modifier: Modifier = Modifier) {
+fun DialpadScreen(modifier: Modifier = Modifier, onCall: (String) -> Unit = {}) {
     val context = LocalContext.current
     var number by remember { mutableStateOf("") }
-    var pendingCall by remember { mutableStateOf<String?>(null) }
 
     val contacts by produceState(initialValue = emptyList<PhoneContact>()) {
         value = withContext(Dispatchers.IO) { ContactsRepository.load(context) }
     }
-    val sims = remember { SimSelector.accounts(context) }
 
     // T9 matches for the typed digits.
     val digits = number.filter { it.isDigit() }
@@ -66,31 +60,8 @@ fun DialpadScreen(modifier: Modifier = Modifier) {
         else contacts.filter { T9.matches(it.name, it.number, digits) }.take(25)
     }
 
-    val placeCall: (String) -> Unit = { target ->
-        if (target.isNotBlank()) {
-            if (sims.size > 1) pendingCall = target
-            else CallPlacer.place(context, target)
-        }
-    }
-
-    // SIM chooser for dual-SIM devices.
-    pendingCall?.let { target ->
-        AlertDialog(
-            onDismissRequest = { pendingCall = null },
-            confirmButton = {},
-            title = { Text(stringResource(R.string.choose_sim)) },
-            text = {
-                Column {
-                    sims.forEach { sim ->
-                        TextButton(onClick = {
-                            CallPlacer.place(context, target, sim.handle)
-                            pendingCall = null
-                        }) { Text(sim.label) }
-                    }
-                }
-            }
-        )
-    }
+    // The SIM / SIP account chooser is handled by the shared onCall handler.
+    val placeCall: (String) -> Unit = { target -> if (target.isNotBlank()) onCall(target) }
 
     val keys = listOf(
         listOf("1" to "", "2" to "ABC", "3" to "DEF"),

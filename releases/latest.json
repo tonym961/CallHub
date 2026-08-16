@@ -1,5 +1,5 @@
 {
-  "versionName": "1.1.0",
-  "apk": "https://github.com/tonym961/CallHub/releases/download/v1.1.0/CallHub-1.1.0-full.apk",
-  "notes": "1.1.0 — firma release stabile, fix SMS (intent), password SIP cifrata, nomi nel widget, parser DE, nome app CallHub."
+  "versionName": "1.2.0",
+  "apk": "https://github.com/tonym961/CallHub/releases/download/v1.2.0/CallHub-1.2.0-full.apk",
+  "notes": "1.2.0 — restyling grafico (rubrica A-Z con avatar, Impostazioni a sotto-pagine), selettore SIM+SIP unificato da ogni schermata."
 }

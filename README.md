@@ -128,8 +128,8 @@ il SIP). Per la trascrizione reale delle registrazioni SIP va innestato un ASR â
 **Vosk** (Apache-2.0, offline) o una STT cloud. Il `SpeechRecognizer` di Android trascrive
 solo il microfono dal vivo, non i file.
 
-Prossimi (spunti da **LineageOS/AOSP Dialer**, Apache-2.0): innesto ASR Vosk per la
-trascrizione, sincronizzazione backup su cloud, gruppi di contatti, esportazione registro.
+Prossimi (1.3.0): **piÃ¹ account SIP** (registrazione multipla + scelta per chiamata),
+innesto ASR Vosk per la trascrizione, sincronizzazione backup su cloud, gruppi di contatti.
 
 > Registrazione: possibile **solo per le chiamate SIP** (controlliamo noi il media via
 > Linphone). Le chiamate **cellulari native non sono registrabili** da un'app normale su
