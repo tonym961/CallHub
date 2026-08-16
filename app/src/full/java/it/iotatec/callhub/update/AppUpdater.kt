@@ -41,24 +41,20 @@ object AppUpdater {
     private data class Release(val version: String, val apkUrl: String)
 
     private fun fetchLatestRelease(): Release? {
-        val url = URL("https://api.github.com/repos/${BuildConfig.GITHUB_OWNER}/${BuildConfig.GITHUB_REPO}/releases/latest")
-        val conn = (url.openConnection() as HttpURLConnection).apply {
+        // The deploy key can push code but not create GitHub Releases, so the
+        // manifest + APK live in /releases and are read via the raw repo URL.
+        val base = "https://raw.githubusercontent.com/${BuildConfig.GITHUB_OWNER}/${BuildConfig.GITHUB_REPO}/main/releases"
+        val conn = (URL("$base/latest.json").openConnection() as HttpURLConnection).apply {
             connectTimeout = 8000
             readTimeout = 8000
-            setRequestProperty("Accept", "application/vnd.github+json")
         }
         conn.inputStream.bufferedReader().use { reader ->
             val obj = JSONObject(reader.readText())
-            val version = obj.getString("tag_name").removePrefix("v").trim()
-            val assets = obj.getJSONArray("assets")
-            for (i in 0 until assets.length()) {
-                val a = assets.getJSONObject(i)
-                if (a.getString("name").endsWith(".apk")) {
-                    return Release(version, a.getString("browser_download_url"))
-                }
-            }
+            val version = obj.getString("versionName").trim()
+            val apk = obj.getString("apk")
+            val apkUrl = if (apk.startsWith("http")) apk else "$base/$apk"
+            return Release(version, apkUrl)
         }
-        return null
     }
 
     private fun downloadApk(activity: Activity, apkUrl: String, version: String): File? {

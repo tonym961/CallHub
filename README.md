@@ -59,6 +59,21 @@ Le funzioni che le policy del Play Store limitano stanno **solo** nel flavor `fu
 ./gradlew assemblePlayDebug     # APK per lo Store
 ```
 
+## Aggiornamenti (auto-update sideload)
+
+Il flavor `full` controlla `releases/latest.json` nel repo (via
+`raw.githubusercontent.com`) e, se c'è una versione più recente, scarica e installa
+l'APK indicato. Pubblicare un aggiornamento:
+
+1. Bump `versionCode`/`versionName` in `app/build.gradle.kts`.
+2. `./gradlew assembleFullDebug` (o una build `release` firmata).
+3. Copia l'APK in `releases/CallHub-<versione>-full.apk`.
+4. Aggiorna `releases/latest.json` (`versionName` + `apk`).
+5. `git commit && git push` → i client `full` si aggiornano.
+
+> Nota: l'APK vive nel repo (scelta per usare solo la deploy key). In alternativa,
+> le *GitHub Releases* evitano il peso in history ma richiedono un token/`gh`.
+
 ## Versioning
 
 `MAJOR.MINOR.PATCH` — **PATCH** = bugfix, **MINOR** = nuove funzioni, **MAJOR** =

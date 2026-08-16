@@ -9,5 +9,7 @@
 .externalNativeBuild/
 .cxx/
 *.apk
+# Published sideload APK lives in the repo (auto-update reads it via raw URL)
+!releases/*.apk
 *.keystore
 !debug.keystore
